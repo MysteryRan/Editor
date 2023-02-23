@@ -1,0 +1,14 @@
+prefix=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64
+exec_prefix=${prefix}
+libdir=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64/lib
+includedir=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 58.45.100
+Requires: libavcodec >= 58.91.100, libswresample >= 3.7.100, libavutil >= 56.51.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavformat -lm -lbz2 -lz -Wl,-framework,CoreFoundation -Wl,-framework,Security
+Libs.private: 
+Cflags: -I${includedir}

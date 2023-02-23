@@ -1,0 +1,14 @@
+prefix=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64
+exec_prefix=${prefix}
+libdir=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64/lib
+includedir=/Users/zouran/Desktop/Code/FFmpeg-iOS-build-script-master/thin/arm64/include
+
+Name: libswscale
+Description: FFmpeg image rescaling library
+Version: 5.7.100
+Requires: libavutil >= 56.51.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lswscale -lm
+Libs.private: 
+Cflags: -I${includedir}
