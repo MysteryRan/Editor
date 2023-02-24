@@ -243,7 +243,6 @@
             CGFloat triangleWidth = self.timeRule * transition_time;
             CGFloat showWidth = self.timeRule * segment.source_timerange.duration;
             CGFloat triangleHeight = 50;
-            clipView.backgroundColor = [UIColor greenColor];
             UIBezierPath *trianglePath = [[UIBezierPath alloc] init];
             [trianglePath moveToPoint:CGPointMake(15, triangleHeight)];
             [trianglePath addLineToPoint:CGPointMake(triangleWidth, 0)];

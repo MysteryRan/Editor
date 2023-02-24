@@ -476,7 +476,7 @@ void audio_callback(void *userdata, UInt8 *stream, int len) {
 
     vp = &global_video_state->pictq[global_video_state->pictq_rindex];
     if(vp->bmp) {
-        NSLog(@"video pts %lld",vp->bmp->pts);
+//        NSLog(@"video pts %lld",vp->bmp->pts);
         AVFrame *outP = nil;
         if (self.videoScale) {
             if (![self.videoScale rescaleFrame:vp->bmp out:&outP]) {

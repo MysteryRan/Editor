@@ -21,6 +21,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (EditorVideo *)segmentFindVideo;
 
 - (CMTimeRange)getAVFoundationTargetTimeRange;
+- (CMTime)getAVFoundationTargetTimeStart;
+- (CMTime)getAVFoundationTargetTimeDuration;
 
 @end
 

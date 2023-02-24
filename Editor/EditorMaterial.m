@@ -14,6 +14,7 @@
     if (self) {
         self.videos = [NSMutableArray arrayWithCapacity:0];
         self.transitions = [NSMutableArray arrayWithCapacity:0];
+        self.video_effects = [NSMutableArray arrayWithCapacity:0];
     }
     return self;
 }
@@ -22,6 +23,7 @@
     // value should be Class or Class name.
     return @{@"videos" : [EditorVideo class],
              @"transitions" : [EditorTransition class],
+             @"video_effects" : [EditorVideoEffect class],
     };
 }
 

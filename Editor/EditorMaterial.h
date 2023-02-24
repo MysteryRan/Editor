@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "EditorVideo.h"
 #import "EditorTransition.h"
+#import "EditorVideoEffect.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong)NSMutableArray <EditorVideo *>*videos;
 @property(nonatomic, strong)NSMutableArray <EditorTransition *>*transitions;
+@property(nonatomic, strong)NSMutableArray <EditorVideoEffect *>*video_effects;
 
 @end
 

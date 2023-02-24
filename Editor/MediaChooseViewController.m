@@ -15,6 +15,7 @@
 #import "FFMpegTool.h"
 #import "EditorMaterial.h"
 #import "ViewController.h"
+#import "EditorVideoEffect.h"
 
 @interface MediaChooseViewController ()<UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout>
 
@@ -128,97 +129,70 @@ static NSString *CollectionCellIdentifier = @"cell";
     self.thumbnailSize = CGSizeMake(cellSize.width * scale, cellSize.height * scale);
     
     [self updateCachedAssets];
-//    [self checkPhotoLibraryPrivacy];
+    [self checkPhotoLibraryPrivacy];
     [self loadAssets];
+}
+
+- (void)checkPhotoLibraryPrivacy {
+    
+    PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+    switch (status) {
+        case PHAuthorizationStatusRestricted:
+        case PHAuthorizationStatusDenied:
+        {
+            dispatch_async(dispatch_get_main_queue(), ^{
+                UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:@"请在iPhone的“设置-隐私-相册”选项中，允许访问你的相册。" preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction *submitAction = [UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+                    NSURL *url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
+                    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:NULL];
+                }];
+                UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+                }];
+                [alert addAction:submitAction];
+                [alert addAction:cancelAction];
+                [self presentViewController:alert animated:YES completion:nil];
+            });
+            
+            break;
+        }
+        case PHAuthorizationStatusAuthorized: {
+            {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self loadAssets];
+                });
+            }
+            break;
+        }
+        case PHAuthorizationStatusNotDetermined:
+        {
+            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
+                if (@available(iOS 14, *)) {
+                    if (status == PHAuthorizationStatusAuthorized || status == PHAuthorizationStatusLimited) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self loadAssets];
+                        });
+                    }
+                } else {
+                    if (status == PHAuthorizationStatusAuthorized) {
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [self loadAssets];
+                        });
+                    }
+                }
+            }];
+            break;
+        }
+        case PHAuthorizationStatusLimited:
+            if (@available(iOS 14, *)) {
+                
+            }
+            break;
+    }
+    
 }
 
 - (void)bottomButtonClick {
     [self ffmpegSaveLocalPath:@""];
-    return;
-//    vc_saveAsPNG
-//    MainMediaTimelineViewController *mediaViewController = [MainMediaTimelineViewController new];
-//    mediaViewController.selectedResources = self.selectedAssets;
-    
-//    [PHImageManager.defaultManager requestImageForAsset:self.selectedAssets[0]
-//                                             targetSize:PHImageManagerMaximumSize
-//                                            contentMode:PHImageContentModeDefault
-//                                                options:nil
-//                                          resultHandler:^(UIImage * _Nullable result, NSDictionary * _Nullable info) {
-//        NSData *data = UIImagePNGRepresentation(result);
-//        [data writeToFile:[NSTemporaryDirectory() stringByAppendingPathComponent:@"saved.png"]
-//               atomically:YES];
-//    }];
-    
-    PHVideoRequestOptions *option = [[PHVideoRequestOptions alloc] init];
-        option.version = PHVideoRequestOptionsVersionCurrent; // default
-        option.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic; // default
-
-        // Manager
-        PHImageManager *manager = [PHImageManager defaultManager];
-        [manager requestExportSessionForVideo:self.selectedAssets[0] options:option exportPreset:AVAssetExportPresetHighestQuality  resultHandler:^(AVAssetExportSession * _Nullable exportSession, NSDictionary * _Nullable info) {
-
-            // Path
-            NSString *videoPath = [NSTemporaryDirectory() stringByAppendingPathComponent:@"saved.mp4"];
-            NSLog(@"videoPath:%@",videoPath);
-
-            // Export
-            exportSession.outputURL = [NSURL fileURLWithPath:videoPath];
-            exportSession.shouldOptimizeForNetworkUse = NO;
-            exportSession.outputFileType = AVFileTypeMPEG4; // mp4
-            [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                switch ([exportSession status]) {
-                    case AVAssetExportSessionStatusFailed:{
-                        // code...
-                        // 取帧
-                        NSString *ss = [[videoPath lastPathComponent] stringByDeletingPathExtension];
-                        NSString *dicName = [NSString stringWithFormat:@"Documents/%@", ss];
-                        NSString *testDirectory = [NSHomeDirectory() stringByAppendingPathComponent:dicName];
-                        NSFileManager *fileManager = [NSFileManager defaultManager];
-                        if (![[NSFileManager defaultManager] fileExistsAtPath:testDirectory])
-                        {
-                            [fileManager createDirectoryAtPath:testDirectory withIntermediateDirectories:YES attributes:nil error:nil];
-                        } else {
-                            AVURLAsset *asset = [[AVURLAsset alloc] initWithURL:[NSURL fileURLWithPath:videoPath] options:nil];
-                            AVAssetImageGenerator *gen = [[AVAssetImageGenerator alloc] initWithAsset:asset];
-                            gen.appliesPreferredTrackTransform = YES;
-                            gen.requestedTimeToleranceAfter = kCMTimeZero;
-                            gen.requestedTimeToleranceBefore = kCMTimeZero;
-                            int bite = 0;
-                            if(1 - floorf(1) == 0.f){
-                                bite = 30;
-                            }else{
-                                
-                                CGFloat sec = (1 - floorf(1))*30;
-                                if (sec < 2) {
-                                    bite = 30;
-                                }else{
-                                    
-                                    bite =  floorf(sec);
-                                }
-                            }
-                            CMTime time = CMTimeMakeWithSeconds(1, bite);
-                            NSError *error = nil;
-                            CMTime actualTime;
-                            CGImageRef image = [gen copyCGImageAtTime:time actualTime:&actualTime error:&error];
-                            UIImage *thumb = [[UIImage alloc] initWithCGImage:image];
-                            
-                            NSData *data = UIImagePNGRepresentation(thumb);
-                                    [data writeToFile:[NSTemporaryDirectory() stringByAppendingPathComponent:@"saved00.png"]
-                                           atomically:YES];
-                            NSLog(@"finish");
-                        }
-                            
-                    }break;
-                    default:
-                        break;
-                }
-            }];
-        }];
-    
-    
-    
-//    mediaViewController.modalPresentationStyle = UIModalPresentationFullScreen;
-//    [self presentViewController:mediaViewController animated:YES completion:nil];
 }
 
 // 转码保存本地
@@ -229,11 +203,38 @@ static NSString *CollectionCellIdentifier = @"cell";
     
     dispatch_group_t group = dispatch_group_create();
     
-    
+    // 主轨
     MediaTrack *mainTrack = [[MediaTrack alloc] init];
     mainTrack.type = MediaTrackTypeVideo;
     [editorData.tracks addObject:mainTrack];
-
+    
+    // 特效轨
+    MediaTrack *effectsTrack = [[MediaTrack alloc] init];
+    effectsTrack.type = MediaTrackTypeEffect;
+    [editorData.tracks addObject:effectsTrack];
+    
+    MediaSegment *effectSegment1 = [[MediaSegment alloc] init];
+    effectSegment1.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:3000000];
+    
+    EditorVideoEffect *videoEffect = [[EditorVideoEffect alloc] init];
+    videoEffect.relation_id = [NSString media_GUIDString];
+    videoEffect.path = [[NSBundle mainBundle] pathForResource:@"monochrome" ofType:@"fsh"];
+    effectSegment1.material_id = videoEffect.relation_id;
+    [materials.video_effects addObject:videoEffect];
+    
+    
+    MediaSegment *effectSegment2 = [[MediaSegment alloc] init];
+    effectSegment2.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:4000000 timeRangeDuration:3000000];
+    
+    EditorVideoEffect *videoEffect2 = [[EditorVideoEffect alloc] init];
+    videoEffect2.relation_id = [NSString media_GUIDString];
+    videoEffect2.path = [[NSBundle mainBundle] pathForResource:@"monochrome" ofType:@"fsh"];
+    effectSegment2.material_id = videoEffect2.relation_id;
+    [materials.video_effects addObject:videoEffect2];
+    
+    [effectsTrack.segments addObject:effectSegment1];
+    [effectsTrack.segments addObject:effectSegment2];
+    
     __block uint64_t start = 0;
     for (int i = 0; i < self.selectedAssets.count; i ++) {
         PHAsset *a = self.selectedAssets[i];
@@ -250,6 +251,8 @@ static NSString *CollectionCellIdentifier = @"cell";
                 extension = @"mov";
             } else if ([lowName isEqualToString:@"mp4"]) {
                 extension = @"mp4";
+            } else {
+                extension = @"mp4";
             }
             
             CFUUIDRef theUUID = CFUUIDCreate(NULL);
@@ -262,9 +265,9 @@ static NSString *CollectionCellIdentifier = @"cell";
             u = [self findVideoPath:[NSString stringWithFormat:@"iOSALBUM@%@@%@.%@",u,timeString,extension]];
             
             NSLog(@"%@",u);
-            if ([FFMpegTool hevcexport:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
+            
+            if ([FFMpegTool exportAblumPhoto:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
                 MediaInfo *info = [FFMpegTool openStreamFunc:u];
-                uint64_t start = 0;
                 NSString *videoPath = u;
                 EditorVideo *video = [[EditorVideo alloc] init];
                 video.path = videoPath;
@@ -308,13 +311,17 @@ static NSString *CollectionCellIdentifier = @"cell";
     }
     
     dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
-        NSLog(@"data ---> %@",editorData);
-        
         dispatch_async(dispatch_get_main_queue(), ^{
             ViewController *vc = [[ViewController alloc] init];
+            vc.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:vc animated:YES completion:nil];
         });
     });
+}
+
+// 添加特效
+- (void)addEffects {
+    
 }
 
 - (NSString *)findVideoPath:(NSString *)fileName {
@@ -345,7 +352,7 @@ static NSString *CollectionCellIdentifier = @"cell";
 - (NSString *)createVideoFinder:(NSString *)prePath {
     NSString *videoFinder = [prePath stringByAppendingPathComponent:@"video"];
     if (![[NSFileManager defaultManager] fileExistsAtPath:videoFinder]) {
-        BOOL isSuccess =  [[NSFileManager defaultManager] createDirectoryAtPath:prePath withIntermediateDirectories:YES attributes:nil error:nil];
+        BOOL isSuccess =  [[NSFileManager defaultManager] createDirectoryAtPath:videoFinder withIntermediateDirectories:YES attributes:nil error:nil];
         if (isSuccess) {
             return videoFinder;
         } else {
@@ -420,9 +427,9 @@ static NSString *CollectionCellIdentifier = @"cell";
     
     if (asset.mediaType == PHAssetMediaTypeVideo) {
         [cell.durationLabel setHidden:NO];
-//        NSInteger minutes = (NSInteger)(asset.duration / 60.0);
-//        NSInteger seconds = (NSInteger)round(asset.duration - 60.0 * (double)minutes);
-//        NSString *text = [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
+        NSInteger minutes = (NSInteger)(asset.duration / 60.0);
+        NSInteger seconds = (NSInteger)round(asset.duration - 60.0 * (double)minutes);
+        NSString *text = [NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds];
         
         NSShadow *shadow = [NSShadow new];
         shadow.shadowBlurRadius = 4;
@@ -431,8 +438,8 @@ static NSString *CollectionCellIdentifier = @"cell";
         NSDictionary *attribtDic = @{NSUnderlineStyleAttributeName: [NSNumber numberWithInteger:NSUnderlineStyleNone],
                                      NSShadowAttributeName: shadow
         };
-//        NSMutableAttributedString *attribtStr = [[NSMutableAttributedString alloc]initWithString:text attributes:attribtDic];
-//        cell.durationLabel.attributedText = attribtStr;
+        NSMutableAttributedString *attribtStr = [[NSMutableAttributedString alloc]initWithString:text attributes:attribtDic];
+        cell.durationLabel.attributedText = attribtStr;
     } else {
         [cell.durationLabel setHidden:YES];
     }
@@ -502,11 +509,11 @@ static NSString *CollectionCellIdentifier = @"cell";
 //        [self.chooseListView showWithSelectedImages:self.selectedAssets];
 //    };
     
-    
+    __weak typeof(MediaChooseCell *)weakCell = cell;
     cell.didChooseImage = ^(NSInteger item) {
         if ([self.selectedAssets containsObject:asset]) { // 反选
             [self.selectedAssets removeObjectAtIndex:[self.selectedAssets indexOfObject:asset]];
-            [cell.selectionIndexLabel setHidden:YES];
+            [weakCell.selectionIndexLabel setHidden:YES];
             NSMutableArray<NSIndexPath *> *indexPaths = [NSMutableArray arrayWithCapacity:self.selectedAssets.count];
             for (PHAsset *assets in self.selectedAssets) {
                 NSUInteger index = [self.fetchResult indexOfObject:assets];
@@ -518,9 +525,9 @@ static NSString *CollectionCellIdentifier = @"cell";
             }];
         } else {
             [self.selectedAssets addObject:asset]; // 选中
-            cell.selectionIndexLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.selectedAssets.count];
+            weakCell.selectionIndexLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.selectedAssets.count];
 //            if (cell.showSelectionIndex) {
-                [cell.selectionIndexLabel setHidden:NO];
+                [weakCell.selectionIndexLabel setHidden:NO];
 //            }
         }
         

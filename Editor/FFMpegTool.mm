@@ -553,7 +553,12 @@ typedef struct OutputStream {
             fprintf(stderr, "Failed to copy codec parameters\n");
             goto end;
         }
-        out_stream->codecpar->codec_tag = 0;
+        
+        if (out_stream->codecpar->codec_id == AV_CODEC_ID_HEVC) {
+            out_stream->codecpar->codec_tag = MKTAG('h', 'v', 'c', '1');
+        } else {
+            out_stream->codecpar->codec_tag = 0;
+        }
     }
     av_dump_format(ofmt_ctx, 0, out_filename, 1);
 

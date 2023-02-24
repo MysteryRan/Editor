@@ -42,7 +42,7 @@
 @property (nonatomic, strong)LCPlayer *lcplayer;
 
 @property (nonatomic, strong) GPUImagePicture *picc;
-
+@property (nonatomic, strong) NSMutableDictionary *effectsDic;
 @end
 
 @implementation EditorffmpegReader
@@ -74,7 +74,7 @@
 //    [self.lcplayer maintest];
     [self.lcplayer appendClip:video.path trimIn:segment.source_timerange.start trimOut:segment.source_timerange.start + segment.source_timerange.duration];
     
-    
+    self.effectsDic = [NSMutableDictionary dictionaryWithCapacity:0];
     return filter;
 }
 
@@ -150,6 +150,19 @@
     return transForm;
 }
 
+- (void)addFilterBySegment:(MediaSegment *)segment {
+    EditorData *editorData = [EditorData sharedInstance];
+    EditorMaterial *material = editorData.materials;
+    for (EditorVideoEffect *videoEffect in material.video_effects) {
+        if ([videoEffect.relation_id isEqualToString:segment.material_id]) {
+//            GPUImageFilter *filter = [[GPUImageFilter alloc] initWithFragmentShaderFromFilePath:videoEffect.path];
+            GPUImageMonochromeFilter *filter = [[GPUImageMonochromeFilter alloc] init];
+            self.effectsDic[segment.material_id] = filter;
+            [self.pipeline addFilter:filter];
+        }
+    }
+}
+
 - (void)addselectedFilter {
     GPUImageMonochromeFilter *monochromeFilter = [[GPUImageMonochromeFilter alloc] init];
 //    [self.pipeline addFilter:monochromeFilter];
@@ -199,6 +212,11 @@
     
 }
  */
+
+- (void)removeFilterBySegment:(MediaSegment *)segment {
+    GPUImageFilter *filter = self.effectsDic[segment.material_id];
+    [self.pipeline removeFilter:filter];
+}
 
 - (void)deleteSelectedFilter {
     [self.pipeline removeFilterAtIndex:0];

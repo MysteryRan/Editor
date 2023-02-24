@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak)id <EditorffmpegReaderDelegate> delegate;
 
+@property (nonatomic, assign) CMTimeRange resourceTimeRange;
+
 - (void)readerEnd;
 
 - (void)startEnable:(NSString *)path;
@@ -51,6 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addselectedFilter;
 - (void)deleteSelectedFilter;
+
+- (void)removeFilterBySegment:(MediaSegment *)segment;
+- (void)addFilterBySegment:(MediaSegment *)segment;
 
 @end
 

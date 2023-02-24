@@ -30,4 +30,14 @@
     return insideRange;
 }
 
+- (CMTime)getAVFoundationTargetTimeStart {
+    CMTime insideTime = CMTimeMake(self.target_timerange.start, 1);
+    return insideTime;
+}
+
+- (CMTime)getAVFoundationTargetTimeDuration {
+    CMTime insideTime = CMTimeMake(self.target_timerange.duration, 1);
+    return insideTime;
+}
+
 @end
