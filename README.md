@@ -34,3 +34,4 @@
 <li>不支持暂停与seek</li>
 </ol>
 
+![项目示例](https://github.com/MysteryRan/Editor/blob/main/img/demo.gif "界面")
