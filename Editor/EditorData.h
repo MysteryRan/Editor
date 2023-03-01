@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong)CanvasConfig *canvas_config;
 @property (nonatomic, strong)NSMutableArray <MediaTrack *>*tracks;
+@property (nonatomic, assign)int fps;
 @property (nonatomic, strong)EditorMaterial *materials;
 
 @end

@@ -100,6 +100,8 @@
     self.view.backgroundColor = [UIColor blackColor];
 //    self.audioPlayer = [[EditorAudioPlayer alloc] init];
 //    [self.audioPlayer play];
+//    [FFMpegTool copytest];
+//    return;
     
     [self setupPreView];
     [self setupPlaycontrol];
@@ -130,8 +132,9 @@
             self.ffmpegReader.resourceTimeRange = [self.firstSegment getAVFoundationTargetTimeRange];
             self.currentFilter = [self.ffmpegReader startWith:self.firstSegment];
             [self.currentFilter addTarget:self.gpuPreView];
-//                [self.currentFilter addTarget:self.movieWrite];
-//                [self.movieWrite startRecording];
+            self.movieWrite = [[EditorMovieWrite alloc] initWithMovieURL:[NSURL URLWithString:@""] size:CGSizeMake(1920, 1080)];
+                [self.currentFilter addTarget:self.movieWrite];
+                [self.movieWrite startRecording];
         }
         uint64_t current_time = round(time);
         [self trackControlWithTime:current_time];
@@ -188,6 +191,7 @@
     
     if (time > self.totalSecond) {
         dispatch_suspend(self->video_render_timer);
+        [self.movieWrite finishRecording];
         return;
     }
     
@@ -251,10 +255,10 @@
             [self.nextFilter addTarget:self.transitionFilter];
             
             [self.transitionFilter addTarget:self.gpuPreView];
-//            [self.transitionFilter addTarget:self.movieWrite];
+            [self.transitionFilter addTarget:self.movieWrite];
         } else {
             [self.nextFilter addTarget:self.gpuPreView];
-//            [self.nextFilter addTarget:self.movieWrite];
+            [self.nextFilter addTarget:self.movieWrite];
         }
     }
     // 转场中
@@ -272,7 +276,7 @@
             [self.nextFilter removeAllTargets];
             [self.transitionFilter removeAllTargets];
             [self.nextFilter addTarget:self.gpuPreView];
-//            [self.nextFilter addTarget:self.movieWrite];
+            [self.nextFilter addTarget:self.movieWrite];
         }
     }
 }
@@ -393,6 +397,7 @@
 - (void)playButtonClick:(UIButton *)sender {
     sender.selected = !sender.selected;
     if (sender.isSelected) {
+        [self.audioPlayer play];
         dispatch_resume(self->video_render_timer);
         sender.enabled = FALSE;
     }
@@ -437,6 +442,8 @@
     self.editorData = [EditorData sharedInstance];
     MediaTrack *mainTrack = self.editorData.tracks[0];
     
+    self.audioPlayer = [[EditorAudioPlayer alloc] initWithMediaTrack:mainTrack];
+   
     for (int i = 0; i < mainTrack.segments.count; i ++) {
         MediaSegment *segment = mainTrack.segments[i];
         if (i == 0) {
@@ -448,6 +455,8 @@
     }
     
     [self.timelineView initSubviewsWithSegments:mainTrack.segments];
+    
+    [self addTrackSegment:nil];
     
 //    self.timelineView.delegate = self;
     

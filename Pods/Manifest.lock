@@ -2,12 +2,14 @@ PODS:
   - GPUImage (0.1.7)
   - LookinServer (1.0.6)
   - Masonry (1.1.0)
+  - MBProgressHUD (1.2.0)
   - YYModel (1.0.4)
 
 DEPENDENCIES:
   - GPUImage
   - LookinServer
   - Masonry
+  - MBProgressHUD
   - YYModel
 
 SPEC REPOS:
@@ -15,14 +17,16 @@ SPEC REPOS:
     - GPUImage
     - LookinServer
     - Masonry
+    - MBProgressHUD
     - YYModel
 
 SPEC CHECKSUMS:
   GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
   LookinServer: 18155b1e4a08213c236a1dd6b7ca52328a70a1e3
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 6dd21eec542679fae0de8130a49f9348e39e77a2
+PODFILE CHECKSUM: 6f4bb7f3ecca3637f80367d3ba4defbc4551921c
 
 COCOAPODS: 1.10.1

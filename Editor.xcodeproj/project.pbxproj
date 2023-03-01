@@ -19,6 +19,7 @@
 		1A1782832941BED40025D6FD /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1782822941BED40025D6FD /* AudioToolbox.framework */; };
 		1A1782852941BEDC0025D6FD /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1782842941BEDC0025D6FD /* VideoToolbox.framework */; };
 		1A1782892941BEF00025D6FD /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1782882941BEF00025D6FD /* CoreMedia.framework */; };
+		1A17F8F929ADBF820084694A /* EditorMovieEncoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A17F8F829ADBF820084694A /* EditorMovieEncoder.m */; };
 		1A1AE8A128A4A2740091C9CF /* Heart.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 1A1AE8A028A4A2740091C9CF /* Heart.fsh */; };
 		1A1B72FE28D41DE6007389EE /* CachedAssetImageGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1B72FC28D41DE6007389EE /* CachedAssetImageGenerator.m */; };
 		1A1B8C6429518DCF00EBDB4F /* EditorVideoScale.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A1B8C5529518DCE00EBDB4F /* EditorVideoScale.m */; };
@@ -49,7 +50,6 @@
 		1A39AD5829A88A25000F6CFB /* EditorVideoEffect.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A39AD5729A88A25000F6CFB /* EditorVideoEffect.m */; };
 		1A3CE9DB283378C700703A19 /* MediaTimelineRuler.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A3CE9DA283378C700703A19 /* MediaTimelineRuler.m */; };
 		1A4D8678282CC47E001247AF /* VideoThumbnailView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A4D8677282CC47E001247AF /* VideoThumbnailView.m */; };
-		1A50E6AE299348B5001FE796 /* YHNAVRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A50E6AC299348B4001FE796 /* YHNAVRecord.m */; };
 		1A526AC328C589C3007E5063 /* imageTr.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 1A526AC228C589C3007E5063 /* imageTr.fsh */; };
 		1A59374A28AA252E00D5DCEE /* MediaChooseViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A59374928AA252E00D5DCEE /* MediaChooseViewController.m */; };
 		1A59375128AA257700D5DCEE /* MediaChooseCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A59374B28AA257700D5DCEE /* MediaChooseCell.m */; };
@@ -143,9 +143,6 @@
 		1AF3B643282A36820043057A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1AF3B642282A36820043057A /* Assets.xcassets */; };
 		1AF3B646282A36820043057A /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1AF3B644282A36820043057A /* LaunchScreen.storyboard */; };
 		1AF3B649282A36820043057A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AF3B648282A36820043057A /* main.m */; };
-		1AFE7C66299207CE0071790F /* X264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE7C5F299207CE0071790F /* X264Encoder.m */; };
-		1AFE7C67299207CE0071790F /* WriteH264Streaming.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE7C64299207CE0071790F /* WriteH264Streaming.m */; };
-		1AFE7C68299207CE0071790F /* VideoConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AFE7C65299207CE0071790F /* VideoConfiguration.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -167,6 +164,8 @@
 		1A1782842941BEDC0025D6FD /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
 		1A1782862941BEE60025D6FD /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1A1782882941BEF00025D6FD /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		1A17F8F729ADBF820084694A /* EditorMovieEncoder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditorMovieEncoder.h; sourceTree = "<group>"; };
+		1A17F8F829ADBF820084694A /* EditorMovieEncoder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorMovieEncoder.m; sourceTree = "<group>"; };
 		1A1AE8A028A4A2740091C9CF /* Heart.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Heart.fsh; sourceTree = "<group>"; };
 		1A1B72FC28D41DE6007389EE /* CachedAssetImageGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CachedAssetImageGenerator.m; sourceTree = "<group>"; };
 		1A1B72FD28D41DE6007389EE /* CachedAssetImageGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CachedAssetImageGenerator.h; sourceTree = "<group>"; };
@@ -351,8 +350,6 @@
 		1A3CE9DA283378C700703A19 /* MediaTimelineRuler.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaTimelineRuler.m; sourceTree = "<group>"; };
 		1A4D8676282CC47E001247AF /* VideoThumbnailView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoThumbnailView.h; sourceTree = "<group>"; };
 		1A4D8677282CC47E001247AF /* VideoThumbnailView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoThumbnailView.m; sourceTree = "<group>"; };
-		1A50E6AC299348B4001FE796 /* YHNAVRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YHNAVRecord.m; sourceTree = "<group>"; };
-		1A50E6AD299348B5001FE796 /* YHNAVRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YHNAVRecord.h; sourceTree = "<group>"; };
 		1A526AC228C589C3007E5063 /* imageTr.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = imageTr.fsh; sourceTree = "<group>"; };
 		1A59374828AA252E00D5DCEE /* MediaChooseViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaChooseViewController.h; sourceTree = "<group>"; };
 		1A59374928AA252E00D5DCEE /* MediaChooseViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaChooseViewController.m; sourceTree = "<group>"; };
@@ -482,13 +479,6 @@
 		1AF3B645282A36820043057A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		1AF3B647282A36820043057A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1AF3B648282A36820043057A /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		1AFE7C5F299207CE0071790F /* X264Encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = X264Encoder.m; sourceTree = "<group>"; };
-		1AFE7C60299207CE0071790F /* VideoConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VideoConfiguration.h; sourceTree = "<group>"; };
-		1AFE7C61299207CE0071790F /* WriteH264Streaming.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WriteH264Streaming.h; sourceTree = "<group>"; };
-		1AFE7C62299207CE0071790F /* H264OutputProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = H264OutputProtocol.h; sourceTree = "<group>"; };
-		1AFE7C63299207CE0071790F /* X264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = X264Encoder.h; sourceTree = "<group>"; };
-		1AFE7C64299207CE0071790F /* WriteH264Streaming.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WriteH264Streaming.m; sourceTree = "<group>"; };
-		1AFE7C65299207CE0071790F /* VideoConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VideoConfiguration.m; sourceTree = "<group>"; };
 		678C698D8E797E828F96CCF3 /* Pods-Editor.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Editor.debug.xcconfig"; path = "Target Support Files/Pods-Editor/Pods-Editor.debug.xcconfig"; sourceTree = "<group>"; };
 		770E39D81AC0D7CA179A66DF /* Pods_Editor.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Editor.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E5558189372F8B41C0A3B4E9 /* Pods-Editor.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Editor.release.xcconfig"; path = "Target Support Files/Pods-Editor/Pods-Editor.release.xcconfig"; sourceTree = "<group>"; };
@@ -987,7 +977,8 @@
 				1AE36669298E1BE400BCFB2F /* RanMultipleTrackCollectionView.m */,
 				1AE3666E298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.h */,
 				1AE3666F298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.m */,
-				1AFE7C5E299207CE0071790F /* X264Manager */,
+				1A17F8F729ADBF820084694A /* EditorMovieEncoder.h */,
+				1A17F8F829ADBF820084694A /* EditorMovieEncoder.m */,
 				1A27D3C929A4484200000172 /* 3rd */,
 				1AF3B63F282A36820043057A /* Main.storyboard */,
 				1AF3B642282A36820043057A /* Assets.xcassets */,
@@ -996,22 +987,6 @@
 				1AF3B648282A36820043057A /* main.m */,
 			);
 			path = Editor;
-			sourceTree = "<group>";
-		};
-		1AFE7C5E299207CE0071790F /* X264Manager */ = {
-			isa = PBXGroup;
-			children = (
-				1A50E6AD299348B5001FE796 /* YHNAVRecord.h */,
-				1A50E6AC299348B4001FE796 /* YHNAVRecord.m */,
-				1AFE7C5F299207CE0071790F /* X264Encoder.m */,
-				1AFE7C60299207CE0071790F /* VideoConfiguration.h */,
-				1AFE7C61299207CE0071790F /* WriteH264Streaming.h */,
-				1AFE7C62299207CE0071790F /* H264OutputProtocol.h */,
-				1AFE7C63299207CE0071790F /* X264Encoder.h */,
-				1AFE7C64299207CE0071790F /* WriteH264Streaming.m */,
-				1AFE7C65299207CE0071790F /* VideoConfiguration.m */,
-			);
-			path = X264Manager;
 			sourceTree = "<group>";
 		};
 		6A250EE7FB5860DC687EE0FD /* Pods */ = {
@@ -1241,14 +1216,13 @@
 				1A59375128AA257700D5DCEE /* MediaChooseCell.m in Sources */,
 				1A1B72FE28D41DE6007389EE /* CachedAssetImageGenerator.m in Sources */,
 				1AE3666C298E1BE500BCFB2F /* RanMultipleTrackCollectionView.m in Sources */,
-				1AFE7C68299207CE0071790F /* VideoConfiguration.m in Sources */,
 				1A6543B429498BE100F77074 /* EditorAudioPlayer.m in Sources */,
 				1A59376228AA261B00D5DCEE /* MediaBottomActionItemModel.m in Sources */,
 				1A7C030128D2AA2F00924020 /* FlowerFilter.m in Sources */,
 				1A1C6C3828A5E45400740ED7 /* NSString+RanAdditions.m in Sources */,
 				1A057A56282B989200047DE3 /* RanMediaTimelineContainer.m in Sources */,
-				1AFE7C66299207CE0071790F /* X264Encoder.m in Sources */,
 				1AF3B63E282A36820043057A /* ViewController.m in Sources */,
+				1A17F8F929ADBF820084694A /* EditorMovieEncoder.m in Sources */,
 				1AE3666B298E1BE500BCFB2F /* MutilpleTrackContentView.m in Sources */,
 				1AD536F22946B68A007F3DB6 /* EditorMaterial.m in Sources */,
 				1A057A54282B989200047DE3 /* RanVideoSegmentView.m in Sources */,
@@ -1262,7 +1236,6 @@
 				1A1B8C6429518DCF00EBDB4F /* EditorVideoScale.m in Sources */,
 				1AE3666D298E1BE500BCFB2F /* MediaTrackCell.m in Sources */,
 				1A057A55282B989200047DE3 /* RanSegmentClipView.m in Sources */,
-				1AFE7C67299207CE0071790F /* WriteH264Streaming.m in Sources */,
 				1AF0F9ED2942FC0200072808 /* EditorffmpegReader.m in Sources */,
 				1A2FBCBD29484558002742E8 /* EditorSticker.m in Sources */,
 				1AD536F02946B68A007F3DB6 /* EditorData.m in Sources */,
@@ -1270,7 +1243,6 @@
 				1A9C6F2A294ABD2400E1FA0E /* OtherTool.m in Sources */,
 				1AB7CA46294FF8F900F69BA4 /* CanvasConfig.m in Sources */,
 				1A59376828AA266900D5DCEE /* MediaChooseListCell.m in Sources */,
-				1A50E6AE299348B5001FE796 /* YHNAVRecord.m in Sources */,
 				1AF3B63B282A36820043057A /* SceneDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

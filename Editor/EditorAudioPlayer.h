@@ -9,7 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class MediaTrack;
 @interface EditorAudioPlayer : NSObject
+
+- (instancetype)initWithMediaTrack:(MediaTrack *)mainTrack;
 
 - (void)play;
 

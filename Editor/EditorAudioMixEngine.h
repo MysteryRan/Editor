@@ -9,7 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+@class MediaTrack;
 @interface EditorAudioMixEngine : NSObject
 
 @property (nonatomic, strong) AVURLAsset *videoAsset;
@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)buildCompositionObjectsForPlayback;
 - (AVPlayerItem *)playerItem;
+
+- (AVPlayerItem *)playerItemWithMainTrack:(MediaTrack *)mainTrack;
 
 - (void)setVideoVolume:(CGFloat)volume;
 - (void)setMusicVolume:(CGFloat)volume;

@@ -192,6 +192,13 @@ static NSString *CollectionCellIdentifier = @"cell";
 }
 
 - (void)bottomButtonClick {
+    if (self.selectedAssets.count != 2) {
+        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        hud.mode = MBProgressHUDModeText;
+        hud.label.text = @"请选择两个视频";
+        [hud hideAnimated:YES afterDelay:3];
+        return;
+    }
     [self ffmpegSaveLocalPath:@""];
 }
 
@@ -234,6 +241,10 @@ static NSString *CollectionCellIdentifier = @"cell";
     
     [effectsTrack.segments addObject:effectSegment1];
     [effectsTrack.segments addObject:effectSegment2];
+    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+    hud.mode = MBProgressHUDModeDeterminate;
+    hud.label.text = @"正在拷贝相册资源";
     
     __block uint64_t start = 0;
     for (int i = 0; i < self.selectedAssets.count; i ++) {
@@ -312,6 +323,7 @@ static NSString *CollectionCellIdentifier = @"cell";
     
     dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
+            [hud hideAnimated:YES];
             ViewController *vc = [[ViewController alloc] init];
             vc.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:vc animated:YES completion:nil];

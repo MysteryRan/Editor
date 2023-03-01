@@ -11,10 +11,7 @@
 #import "GLProgram.h"
 #import "GPUImageFilter.h"
 #import "OtherTool.h"
-#import "VideoConfiguration.h"
-#import "X264Encoder.h"
-#import "WriteH264Streaming.h"
-#import "YHNAVRecord.h"
+#import "EditorMovieEncoder.h"
 
 NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 (
@@ -49,14 +46,7 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     dispatch_queue_t                 encodeQueue;
     NSString                        *h264FilePath;
     
-    
-    VideoConfiguration              *videoConfiguration;
-    X264Encoder                     *x264Encoder;
-    WriteH264Streaming              *writeH264Streaming;
-    
-    
-    YHNAVRecord                   *avRecorder;
-
+    EditorMovieEncoder *movieEncoder;
 }
 
 @property (nonatomic, assign) BOOL isRecoding;
@@ -150,10 +140,6 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
     
     [self initializeMovieWithOutputSettings:outputSettings];
     
-
-    
-    avRecorder = [[YHNAVRecord alloc]init];
-    [avRecorder initParameters];
     videoPathUrl = video_file_url(@"test");
     self.isRecoding = YES;
     [self startRecord];
@@ -162,24 +148,9 @@ NSString *const kGPUImageColorSwizzlingFragmentShaderString = SHADER_STRING
 }
 
 - (void)startRecord {
-//    self.isRercoding = [avRecorder startRecord:videoPathUrl withW:1920 withH:1080];
-    
-    
-    
-//    return;
-    writeH264Streaming = [[WriteH264Streaming alloc] init];
-    h264FilePath = writeH264Streaming.filePath;
 
-    videoConfiguration = [VideoConfiguration defaultConfiguration];
-    videoConfiguration.videoSize = CGSizeMake(1920, 1080);
-    videoConfiguration.frameRate = 30;
-    videoConfiguration.maxKeyframeInterval = 60;
-    videoConfiguration.bitrate = 1536*1000;
-    x264Encoder = [[X264Encoder alloc] initWithVideoConfiguration:videoConfiguration];
-    [x264Encoder setOutputObject:writeH264Streaming];
-    
-//    [hw configset];
-    
+    movieEncoder = [[EditorMovieEncoder alloc] init];
+    [movieEncoder initWithVideoConfiguration];
     isRecording = YES;
 }
 
@@ -268,6 +239,7 @@ NSString *video_file_url(NSString *file){
 - (void)finishRecording;
 {
     [self finishRecordingWithCompletionHandler:NULL];
+    [movieEncoder teardown];
 }
 
 - (void)finishRecordingWithCompletionHandler:(void (^)(void))handler;
@@ -509,7 +481,7 @@ NSString *video_file_url(NSString *file){
         CVPixelBufferRef nv12pixel_buffer = [OtherTool convertPixelBuffer:pixel_buffer];
 //        [self.rzencoder encodeNv12PixelBuffer:nv12pixel_buffer timestamp:0];
         
-        [x264Encoder encoding:nv12pixel_buffer timestamp:0];
+        [movieEncoder encoding:nv12pixel_buffer timestamp:0];
 //        [avRecorder encodesss:nv12pixel_buffer];
 
 //        [hw encode:pixel_buffer];

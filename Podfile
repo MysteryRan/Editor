@@ -9,6 +9,7 @@ target 'Editor' do
   pod "GPUImage"
   pod "Masonry"
   pod "YYModel"
+  pod 'MBProgressHUD'
   pod 'LookinServer', :configurations => ['Debug']
 
 end

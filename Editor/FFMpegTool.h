@@ -61,7 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)copytest;
 
-+ (int)replaceAudio;
+//+ (int)replaceAudio;
++ (int)replaceAudio:(NSString *)audioFile videoFile:(NSString *)videoFile;
 
 + (void)mutilAudio;
 + (int)addnormaladd;

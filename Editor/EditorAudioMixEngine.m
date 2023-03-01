@@ -6,6 +6,8 @@
 //
 
 #import "EditorAudioMixEngine.h"
+#import "MediaTrack.h"
+#import "MediaSegment.h"
 
 @interface EditorAudioMixEngine ()
 
@@ -173,7 +175,7 @@
     if (!_currentItem) {
         AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:self.composition];
         playerItem.videoComposition = self.videoComposition;
-        playerItem.audioMix = self.audioMix;
+//        playerItem.audioMix = self.audioMix;
         _currentItem = playerItem;
     }
     return _currentItem;
@@ -219,6 +221,41 @@
                 break;
         }
     }];
+}
+
+- (AVPlayerItem *)playerItemWithMainTrack:(MediaTrack *)mainTrack {
+    uint32_t timeScale = TIME_BASE;
+    AVMutableComposition *composition = [AVMutableComposition composition];
+    self.composition = composition;
+    AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
+    self.videoComposition = videoComposition;
+    videoComposition.renderSize = CGSizeMake(720, 405);
+    videoComposition.frameDuration = CMTimeMake(1, 30);
+    AVMutableVideoCompositionInstruction *instruction = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
+    NSMutableArray *layerInstructions = [[NSMutableArray alloc] init];
+    unsigned int totalDuration = 0;
+    for (int i = 0; i < mainTrack.segments.count; i ++) {
+        MediaSegment *seg = mainTrack.segments[i];
+        AVAsset *videoAsset = [AVAsset assetWithURL:[NSURL fileURLWithPath:[seg segmentFindVideo].path]];
+        CMTime inPoint = CMTimeMake(seg.target_timerange.start, timeScale);
+        CMTime trimIn = CMTimeMake(seg.source_timerange.start, timeScale);
+        CMTime trimDuration = CMTimeMake(seg.source_timerange.duration, timeScale);
+        AVAssetTrack *assetVideoTrack = [videoAsset tracksWithMediaType:AVMediaTypeAudio].firstObject;
+        if (assetVideoTrack) {
+            AVMutableCompositionTrack *videoTrack = [composition addMutableTrackWithMediaType:AVMediaTypeAudio preferredTrackID:kCMPersistentTrackID_Invalid];
+            [videoTrack insertTimeRange:CMTimeRangeMake(trimIn, trimDuration) ofTrack:assetVideoTrack atTime:inPoint error:nil];
+            [videoTrack setPreferredTransform:assetVideoTrack.preferredTransform];
+            AVMutableVideoCompositionLayerInstruction *passThroughLayer = [AVMutableVideoCompositionLayerInstruction videoCompositionLayerInstructionWithAssetTrack:videoTrack];
+            [layerInstructions addObject:passThroughLayer];
+            totalDuration = totalDuration + CMTimeGetSeconds([videoAsset duration]);
+        }
+    }
+    instruction.layerInstructions = layerInstructions;
+    CMTime duration = CMTimeMake(totalDuration * 10 * timeScale, timeScale);
+    instruction.timeRange = CMTimeRangeMake(kCMTimeZero, duration);
+    videoComposition.instructions = @[instruction];
+    AVPlayerItem *playerItem = [AVPlayerItem playerItemWithAsset:[composition copy]];
+    return playerItem;
 }
 
 

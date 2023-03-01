@@ -8,6 +8,7 @@
 #import "EditorAudioPlayer.h"
 #import "EditorAudioMixEngine.h"
 #import <AVFoundation/AVFoundation.h>
+#import "MediaTrack.h"
 
 @interface EditorAudioPlayer()
 
@@ -19,20 +20,29 @@
 
 @implementation EditorAudioPlayer
 
-- (instancetype)init {
+- (instancetype)initWithMediaTrack:(MediaTrack *)mainTrack {
     self = [super init];
     if (self) {
         self.audioPlayer = [[AVPlayer alloc] init];
         
         self.mixEngine = [[EditorAudioMixEngine alloc] init];
-        AVURLAsset *videoAsset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"ii" ofType:@"MP4"]]];
-        AVURLAsset *musicAsset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"]]];
-        self.mixEngine.videoAsset = videoAsset;
-        self.mixEngine.musicAsset = musicAsset;
-        self.mixEngine.videoTimeRange = CMTimeRangeMake(CMTimeMakeWithSeconds(0, 1), CMTimeMakeWithSeconds(30, 1));
+        uint64_t second = 0;
+        for (int i = 0; i < mainTrack.segments.count; i ++) {
+            MediaSegment *seg = mainTrack.segments[i];
+            EditorVideo *videoInfo = [seg segmentFindVideo];
+            second += (seg.source_timerange.start + seg.source_timerange.duration);
+            AVURLAsset *videoAsset = [AVURLAsset assetWithURL:[NSURL fileURLWithPath:videoInfo.path]];
+            if (i == 0) {
+                self.mixEngine.videoAsset = videoAsset;
+            } else {
+                self.mixEngine.musicAsset = videoAsset;
+            }
+        }
+        self.mixEngine.videoTimeRange = CMTimeRangeMake(CMTimeMakeWithSeconds(0, 1), CMTimeMakeWithSeconds(second / TIME_BASE, 1));
         
-        [self.mixEngine buildCompositionObjectsForPlayback];
-        AVPlayerItem *playerItem = [self.mixEngine playerItem];
+//        [self.mixEngine buildCompositionObjectsForPlayback];
+        
+        AVPlayerItem *playerItem = [self.mixEngine playerItemWithMainTrack:mainTrack];
         [self.audioPlayer replaceCurrentItemWithPlayerItem:playerItem];
     }
     return self;
