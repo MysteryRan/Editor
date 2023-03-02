@@ -9,6 +9,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import "EditorVideo.h"
 #import "MediaTimeRange.h"
+#import "MediaClip.h"
 
 NS_ASSUME_NONNULL_BEGIN
 @interface MediaSegment : NSObject
@@ -17,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong)MediaTimeRange *target_timerange;
 @property(nonatomic, strong)MediaTimeRange *source_timerange;
 @property(nonatomic, copy)NSString *material_id;
+@property(nonatomic, strong)MediaClip *clip;
 
 - (EditorVideo *)segmentFindVideo;
 

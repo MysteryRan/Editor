@@ -118,6 +118,10 @@
 		1A98746B2950320B00ED2D32 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1782862941BEE60025D6FD /* AVFoundation.framework */; };
 		1A9C6F2A294ABD2400E1FA0E /* OtherTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9C6F28294ABD2400E1FA0E /* OtherTool.m */; };
 		1AA394B52988EB69002EE5D4 /* LCPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AA394B42988EB69002EE5D4 /* LCPlayer.m */; };
+		1AA9C74729B0248200395A77 /* CanvasVideoBorderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AA9C74629B0248200395A77 /* CanvasVideoBorderView.m */; };
+		1AA9C74A29B0270F00395A77 /* MediaClip.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AA9C74929B0270F00395A77 /* MediaClip.m */; };
+		1AA9C74D29B02C1600395A77 /* MediaFloat.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AA9C74C29B02C1600395A77 /* MediaFloat.m */; };
+		1AA9C75229B062E700395A77 /* GuidelineView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AA9C75129B062E700395A77 /* GuidelineView.m */; };
 		1AAF28DF2892620000554CAF /* MediaBottomActionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AAF28DD2892620000554CAF /* MediaBottomActionView.m */; };
 		1AB6FC0729514F7800C7A1EA /* EditorFFmpegDecode.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AB6FC0629514F7800C7A1EA /* EditorFFmpegDecode.m */; };
 		1AB7CA46294FF8F900F69BA4 /* CanvasConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AB7CA45294FF8F900F69BA4 /* CanvasConfig.m */; };
@@ -430,6 +434,14 @@
 		1A9C6F29294ABD2400E1FA0E /* OtherTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OtherTool.h; sourceTree = "<group>"; };
 		1AA394B32988EB69002EE5D4 /* LCPlayer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LCPlayer.h; sourceTree = "<group>"; };
 		1AA394B42988EB69002EE5D4 /* LCPlayer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LCPlayer.m; sourceTree = "<group>"; };
+		1AA9C74529B0248200395A77 /* CanvasVideoBorderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CanvasVideoBorderView.h; sourceTree = "<group>"; };
+		1AA9C74629B0248200395A77 /* CanvasVideoBorderView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CanvasVideoBorderView.m; sourceTree = "<group>"; };
+		1AA9C74829B0270F00395A77 /* MediaClip.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaClip.h; sourceTree = "<group>"; };
+		1AA9C74929B0270F00395A77 /* MediaClip.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaClip.m; sourceTree = "<group>"; };
+		1AA9C74B29B02C1600395A77 /* MediaFloat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MediaFloat.h; sourceTree = "<group>"; };
+		1AA9C74C29B02C1600395A77 /* MediaFloat.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MediaFloat.m; sourceTree = "<group>"; };
+		1AA9C75029B062E700395A77 /* GuidelineView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GuidelineView.h; sourceTree = "<group>"; };
+		1AA9C75129B062E700395A77 /* GuidelineView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GuidelineView.m; sourceTree = "<group>"; };
 		1AAF28DA2892620000554CAF /* MediaBottomActionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaBottomActionView.h; sourceTree = "<group>"; };
 		1AAF28DC2892620000554CAF /* MediaActionItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaActionItemCell.h; sourceTree = "<group>"; };
 		1AAF28DD2892620000554CAF /* MediaBottomActionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaBottomActionView.m; sourceTree = "<group>"; };
@@ -848,6 +860,190 @@
 			path = texture;
 			sourceTree = "<group>";
 		};
+		1AA9C73A29B0229800395A77 /* Choose */ = {
+			isa = PBXGroup;
+			children = (
+				1A59376B28AA3C3700D5DCEE /* UICollectionView+Extensions.h */,
+				1A59376A28AA3C3700D5DCEE /* UICollectionView+Extensions.m */,
+				1A59376728AA266900D5DCEE /* MediaChooseListCell.h */,
+				1A59376628AA266900D5DCEE /* MediaChooseListCell.m */,
+				1A59375528AA25A700D5DCEE /* UIImage+BundleImage.h */,
+				1A59375428AA25A700D5DCEE /* UIImage+BundleImage.m */,
+				1A59374F28AA257700D5DCEE /* MediaChooseListView.h */,
+				1A59375028AA257700D5DCEE /* MediaChooseListView.m */,
+				1A59374828AA252E00D5DCEE /* MediaChooseViewController.h */,
+				1A59374928AA252E00D5DCEE /* MediaChooseViewController.m */,
+				1A59374C28AA257700D5DCEE /* MediaChooseCell.h */,
+				1A59374B28AA257700D5DCEE /* MediaChooseCell.m */,
+			);
+			path = Choose;
+			sourceTree = "<group>";
+		};
+		1AA9C73B29B022C100395A77 /* Bottom */ = {
+			isa = PBXGroup;
+			children = (
+				1A59376028AA261B00D5DCEE /* MediaBottomActionItemModel.h */,
+				1A59376128AA261B00D5DCEE /* MediaBottomActionItemModel.m */,
+				1AAF28DC2892620000554CAF /* MediaActionItemCell.h */,
+				1A2A889829A33653009F53D3 /* MediaActionItemCell.m */,
+				1AAF28DA2892620000554CAF /* MediaBottomActionView.h */,
+				1AAF28DD2892620000554CAF /* MediaBottomActionView.m */,
+			);
+			path = Bottom;
+			sourceTree = "<group>";
+		};
+		1AA9C73C29B022DE00395A77 /* MainTrack */ = {
+			isa = PBXGroup;
+			children = (
+				1A057A4B282B989100047DE3 /* RanMediaTimeline.h */,
+				1A057A52282B989200047DE3 /* RanMediaTimeline.m */,
+				1A3CE9D9283378C700703A19 /* MediaTimelineRuler.h */,
+				1A3CE9DA283378C700703A19 /* MediaTimelineRuler.m */,
+				1A057A49282B989100047DE3 /* RanMediaTimelineContainer.h */,
+				1A057A51282B989200047DE3 /* RanMediaTimelineContainer.m */,
+				1A057A50282B989200047DE3 /* RanSegmentClipView.h */,
+				1A057A4F282B989200047DE3 /* RanSegmentClipView.m */,
+				1A057A4C282B989100047DE3 /* RanVideoSegmentView.h */,
+				1A057A4D282B989200047DE3 /* RanVideoSegmentView.m */,
+				1A057A4E282B989200047DE3 /* RanVideoTrackPreview.h */,
+				1A057A4A282B989100047DE3 /* RanVideoTrackPreview.m */,
+				1A4D8676282CC47E001247AF /* VideoThumbnailView.h */,
+				1A4D8677282CC47E001247AF /* VideoThumbnailView.m */,
+				1A1B72FD28D41DE6007389EE /* CachedAssetImageGenerator.h */,
+				1A1B72FC28D41DE6007389EE /* CachedAssetImageGenerator.m */,
+			);
+			path = MainTrack;
+			sourceTree = "<group>";
+		};
+		1AA9C73D29B0230500395A77 /* Decode */ = {
+			isa = PBXGroup;
+			children = (
+				1AA394B32988EB69002EE5D4 /* LCPlayer.h */,
+				1AA394B42988EB69002EE5D4 /* LCPlayer.m */,
+				1AF0F9EB2942FC0200072808 /* EditorffmpegReader.h */,
+				1AF0F9EC2942FC0200072808 /* EditorffmpegReader.m */,
+				1AB6FC0529514F7800C7A1EA /* EditorFFmpegDecode.h */,
+				1AB6FC0629514F7800C7A1EA /* EditorFFmpegDecode.m */,
+				1A9C6F29294ABD2400E1FA0E /* OtherTool.h */,
+				1A9C6F28294ABD2400E1FA0E /* OtherTool.m */,
+				1AD536F92946BB56007F3DB6 /* FFMpegTool.h */,
+				1AD536F82946BB56007F3DB6 /* FFMpegTool.mm */,
+			);
+			path = Decode;
+			sourceTree = "<group>";
+		};
+		1AA9C73E29B0232700395A77 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				1AD536E62946B689007F3DB6 /* EditorData.h */,
+				1AD536E42946B689007F3DB6 /* EditorData.m */,
+				1AD536DE2946B688007F3DB6 /* EditorMaterial.h */,
+				1AD536E82946B68A007F3DB6 /* EditorMaterial.m */,
+				1AD536E92946B68A007F3DB6 /* EditorTransition.h */,
+				1AD536EA2946B68A007F3DB6 /* EditorTransition.m */,
+				1A39AD5629A88A25000F6CFB /* EditorVideoEffect.h */,
+				1A39AD5729A88A25000F6CFB /* EditorVideoEffect.m */,
+				1AD536F62946BAF5007F3DB6 /* MediaInfo.h */,
+				1AD536F52946BAF5007F3DB6 /* MediaInfo.m */,
+				1AD536DD2946B688007F3DB6 /* MediaMaterial.h */,
+				1AD536EB2946B68A007F3DB6 /* MediaMaterial.m */,
+				1AD536EC2946B68A007F3DB6 /* MediaTimeRange.h */,
+				1AD536E02946B689007F3DB6 /* MediaTimeRange.m */,
+				1A27399D294FEAC5006FC35D /* MediaSegment.h */,
+				1A27399E294FEAC5006FC35D /* MediaSegment.m */,
+				1AA9C74829B0270F00395A77 /* MediaClip.h */,
+				1AA9C74929B0270F00395A77 /* MediaClip.m */,
+				1AA9C74B29B02C1600395A77 /* MediaFloat.h */,
+				1AA9C74C29B02C1600395A77 /* MediaFloat.m */,
+				1A27D48629A44F9A00000172 /* MediaTrack.h */,
+				1A27D48729A44F9A00000172 /* MediaTrack.m */,
+				1A2FBCBB29484558002742E8 /* EditorSticker.h */,
+				1A2FBCBC29484558002742E8 /* EditorSticker.m */,
+				1ACF745F294FECE6007CC538 /* EditorVideo.h */,
+				1ACF7460294FECE6007CC538 /* EditorVideo.m */,
+				1AB7CA44294FF8F900F69BA4 /* CanvasConfig.h */,
+				1AB7CA45294FF8F900F69BA4 /* CanvasConfig.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		1AA9C73F29B0235400395A77 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1A6543B229498BE000F77074 /* EditorAudioPlayer.h */,
+				1A6543B329498BE100F77074 /* EditorAudioPlayer.m */,
+				1A6543B529498C3000F77074 /* EditorAudioMixEngine.h */,
+				1A6543B629498C3000F77074 /* EditorAudioMixEngine.m */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		1AA9C74029B0236500395A77 /* Track */ = {
+			isa = PBXGroup;
+			children = (
+				1AE36668298E1BE400BCFB2F /* MediaTrackCell.h */,
+				1AE3666A298E1BE500BCFB2F /* MediaTrackCell.m */,
+				1AE36665298E1BE300BCFB2F /* MutilpleTrackContentView.h */,
+				1AE36667298E1BE400BCFB2F /* MutilpleTrackContentView.m */,
+				1AE36666298E1BE400BCFB2F /* RanMultipleTrackCollectionView.h */,
+				1AE36669298E1BE400BCFB2F /* RanMultipleTrackCollectionView.m */,
+				1AE3666E298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.h */,
+				1AE3666F298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.m */,
+			);
+			path = Track;
+			sourceTree = "<group>";
+		};
+		1AA9C74129B0237800395A77 /* Encode */ = {
+			isa = PBXGroup;
+			children = (
+				1A96DE42295EC6BE00C02136 /* EditorMovieWrite.h */,
+				1A96DE43295EC6BE00C02136 /* EditorMovieWrite.m */,
+				1A17F8F729ADBF820084694A /* EditorMovieEncoder.h */,
+				1A17F8F829ADBF820084694A /* EditorMovieEncoder.m */,
+			);
+			path = Encode;
+			sourceTree = "<group>";
+		};
+		1AA9C74229B023A100395A77 /* Tool */ = {
+			isa = PBXGroup;
+			children = (
+				1A1C6C3628A5E45400740ED7 /* NSString+RanAdditions.h */,
+				1A1C6C3728A5E45400740ED7 /* NSString+RanAdditions.m */,
+				1A7C030028D2AA2F00924020 /* FlowerFilter.h */,
+				1A7C02FF28D2AA2F00924020 /* FlowerFilter.m */,
+				1A1B8C4129518DCA00EBDB4F /* EditorVideoScale.h */,
+				1A1B8C5529518DCE00EBDB4F /* EditorVideoScale.m */,
+				1A1B8C6529518EF300EBDB4F /* EditorConvertUtil.h */,
+				1A1B8C6629518EF300EBDB4F /* EditorConvertUtil.m */,
+			);
+			path = Tool;
+			sourceTree = "<group>";
+		};
+		1AA9C74329B023B700395A77 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				1A2FBCB929484473002742E8 /* SequenceMap.png */,
+				1A2FBCBE29484812002742E8 /* ani_info.json */,
+				1A39AD5429A8879C000F6CFB /* monochrome.fsh */,
+				1A1AE8A028A4A2740091C9CF /* Heart.fsh */,
+				1AE36663298DECD800BCFB2F /* replaceCrop.fsh */,
+				1A636E022890D609000B7C1D /* quad.fsh */,
+				1A526AC228C589C3007E5063 /* imageTr.fsh */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		1AA9C74429B0246700395A77 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1AA9C74529B0248200395A77 /* CanvasVideoBorderView.h */,
+				1AA9C74629B0248200395A77 /* CanvasVideoBorderView.m */,
+				1AA9C75029B062E700395A77 /* GuidelineView.h */,
+				1AA9C75129B062E700395A77 /* GuidelineView.m */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		1AF3B62A282A36820043057A = {
 			isa = PBXGroup;
 			children = (
@@ -869,116 +1065,28 @@
 		1AF3B635282A36820043057A /* Editor */ = {
 			isa = PBXGroup;
 			children = (
-				1A7C030428D2AC9000924020 /* texture */,
-				1A59376B28AA3C3700D5DCEE /* UICollectionView+Extensions.h */,
-				1A59376A28AA3C3700D5DCEE /* UICollectionView+Extensions.m */,
-				1A2FBCB929484473002742E8 /* SequenceMap.png */,
-				1A2FBCBE29484812002742E8 /* ani_info.json */,
-				1A59376728AA266900D5DCEE /* MediaChooseListCell.h */,
-				1A59376628AA266900D5DCEE /* MediaChooseListCell.m */,
-				1A59376028AA261B00D5DCEE /* MediaBottomActionItemModel.h */,
-				1A59376128AA261B00D5DCEE /* MediaBottomActionItemModel.m */,
-				1A59375528AA25A700D5DCEE /* UIImage+BundleImage.h */,
-				1A59375428AA25A700D5DCEE /* UIImage+BundleImage.m */,
-				1A59374F28AA257700D5DCEE /* MediaChooseListView.h */,
-				1A59375028AA257700D5DCEE /* MediaChooseListView.m */,
-				1A59374828AA252E00D5DCEE /* MediaChooseViewController.h */,
-				1A59374928AA252E00D5DCEE /* MediaChooseViewController.m */,
-				1A59374C28AA257700D5DCEE /* MediaChooseCell.h */,
-				1A59374B28AA257700D5DCEE /* MediaChooseCell.m */,
-				1A1C6C3628A5E45400740ED7 /* NSString+RanAdditions.h */,
-				1A1C6C3728A5E45400740ED7 /* NSString+RanAdditions.m */,
-				1A39AD5429A8879C000F6CFB /* monochrome.fsh */,
-				1A1AE8A028A4A2740091C9CF /* Heart.fsh */,
-				1AE36663298DECD800BCFB2F /* replaceCrop.fsh */,
-				1A636E022890D609000B7C1D /* quad.fsh */,
-				1A7C030028D2AA2F00924020 /* FlowerFilter.h */,
-				1A7C02FF28D2AA2F00924020 /* FlowerFilter.m */,
-				1A526AC228C589C3007E5063 /* imageTr.fsh */,
-				1AAF28DC2892620000554CAF /* MediaActionItemCell.h */,
-				1A2A889829A33653009F53D3 /* MediaActionItemCell.m */,
-				1AAF28DA2892620000554CAF /* MediaBottomActionView.h */,
-				1AAF28DD2892620000554CAF /* MediaBottomActionView.m */,
 				1AF3B636282A36820043057A /* AppDelegate.h */,
 				1AF3B637282A36820043057A /* AppDelegate.m */,
 				1AF3B639282A36820043057A /* SceneDelegate.h */,
 				1AF3B63A282A36820043057A /* SceneDelegate.m */,
 				1AF3B63C282A36820043057A /* ViewController.h */,
 				1AF3B63D282A36820043057A /* ViewController.m */,
-				1A057A4B282B989100047DE3 /* RanMediaTimeline.h */,
-				1A057A52282B989200047DE3 /* RanMediaTimeline.m */,
-				1A3CE9D9283378C700703A19 /* MediaTimelineRuler.h */,
-				1A3CE9DA283378C700703A19 /* MediaTimelineRuler.m */,
-				1A057A49282B989100047DE3 /* RanMediaTimelineContainer.h */,
-				1A057A51282B989200047DE3 /* RanMediaTimelineContainer.m */,
-				1A057A50282B989200047DE3 /* RanSegmentClipView.h */,
-				1A057A4F282B989200047DE3 /* RanSegmentClipView.m */,
-				1A057A4C282B989100047DE3 /* RanVideoSegmentView.h */,
-				1A057A4D282B989200047DE3 /* RanVideoSegmentView.m */,
-				1A057A4E282B989200047DE3 /* RanVideoTrackPreview.h */,
-				1A057A4A282B989100047DE3 /* RanVideoTrackPreview.m */,
-				1A4D8676282CC47E001247AF /* VideoThumbnailView.h */,
-				1A4D8677282CC47E001247AF /* VideoThumbnailView.m */,
-				1A1B72FD28D41DE6007389EE /* CachedAssetImageGenerator.h */,
-				1A1B72FC28D41DE6007389EE /* CachedAssetImageGenerator.m */,
 				1A057A43282B833300047DE3 /* PrefixHeader.pch */,
-				1AF0F9EB2942FC0200072808 /* EditorffmpegReader.h */,
-				1AF0F9EC2942FC0200072808 /* EditorffmpegReader.m */,
-				1AB6FC0529514F7800C7A1EA /* EditorFFmpegDecode.h */,
-				1AB6FC0629514F7800C7A1EA /* EditorFFmpegDecode.m */,
-				1A9C6F29294ABD2400E1FA0E /* OtherTool.h */,
-				1A9C6F28294ABD2400E1FA0E /* OtherTool.m */,
-				1AD536E62946B689007F3DB6 /* EditorData.h */,
-				1AD536E42946B689007F3DB6 /* EditorData.m */,
-				1AD536DE2946B688007F3DB6 /* EditorMaterial.h */,
-				1AD536E82946B68A007F3DB6 /* EditorMaterial.m */,
-				1AD536E92946B68A007F3DB6 /* EditorTransition.h */,
-				1AD536EA2946B68A007F3DB6 /* EditorTransition.m */,
-				1A39AD5629A88A25000F6CFB /* EditorVideoEffect.h */,
-				1A39AD5729A88A25000F6CFB /* EditorVideoEffect.m */,
-				1AD536F62946BAF5007F3DB6 /* MediaInfo.h */,
-				1AD536F52946BAF5007F3DB6 /* MediaInfo.m */,
-				1AD536DD2946B688007F3DB6 /* MediaMaterial.h */,
-				1AD536EB2946B68A007F3DB6 /* MediaMaterial.m */,
-				1AD536EC2946B68A007F3DB6 /* MediaTimeRange.h */,
-				1AD536E02946B689007F3DB6 /* MediaTimeRange.m */,
-				1A27399D294FEAC5006FC35D /* MediaSegment.h */,
-				1A27399E294FEAC5006FC35D /* MediaSegment.m */,
-				1A27D48629A44F9A00000172 /* MediaTrack.h */,
-				1A27D48729A44F9A00000172 /* MediaTrack.m */,
-				1AD536F92946BB56007F3DB6 /* FFMpegTool.h */,
-				1AD536F82946BB56007F3DB6 /* FFMpegTool.mm */,
-				1A2FBCBB29484558002742E8 /* EditorSticker.h */,
-				1A2FBCBC29484558002742E8 /* EditorSticker.m */,
-				1ACF745F294FECE6007CC538 /* EditorVideo.h */,
-				1ACF7460294FECE6007CC538 /* EditorVideo.m */,
-				1AB7CA44294FF8F900F69BA4 /* CanvasConfig.h */,
-				1AB7CA45294FF8F900F69BA4 /* CanvasConfig.m */,
-				1A6543B229498BE000F77074 /* EditorAudioPlayer.h */,
-				1A6543B329498BE100F77074 /* EditorAudioPlayer.m */,
-				1A6543B529498C3000F77074 /* EditorAudioMixEngine.h */,
-				1A6543B629498C3000F77074 /* EditorAudioMixEngine.m */,
 				1AC02C5C294C0A3200142A39 /* FFPlayPlayer.h */,
 				1AC02C5D294C0A3200142A39 /* FFPlayPlayer.mm */,
 				1AC02C5F294C0CF700142A39 /* FFPlayHeader.h */,
-				1A1B8C4129518DCA00EBDB4F /* EditorVideoScale.h */,
-				1A1B8C5529518DCE00EBDB4F /* EditorVideoScale.m */,
-				1A1B8C6529518EF300EBDB4F /* EditorConvertUtil.h */,
-				1A1B8C6629518EF300EBDB4F /* EditorConvertUtil.m */,
-				1A96DE42295EC6BE00C02136 /* EditorMovieWrite.h */,
-				1A96DE43295EC6BE00C02136 /* EditorMovieWrite.m */,
-				1AA394B32988EB69002EE5D4 /* LCPlayer.h */,
-				1AA394B42988EB69002EE5D4 /* LCPlayer.m */,
-				1AE36668298E1BE400BCFB2F /* MediaTrackCell.h */,
-				1AE3666A298E1BE500BCFB2F /* MediaTrackCell.m */,
-				1AE36665298E1BE300BCFB2F /* MutilpleTrackContentView.h */,
-				1AE36667298E1BE400BCFB2F /* MutilpleTrackContentView.m */,
-				1AE36666298E1BE400BCFB2F /* RanMultipleTrackCollectionView.h */,
-				1AE36669298E1BE400BCFB2F /* RanMultipleTrackCollectionView.m */,
-				1AE3666E298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.h */,
-				1AE3666F298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.m */,
-				1A17F8F729ADBF820084694A /* EditorMovieEncoder.h */,
-				1A17F8F829ADBF820084694A /* EditorMovieEncoder.m */,
+				1AA9C74429B0246700395A77 /* Views */,
+				1AA9C74229B023A100395A77 /* Tool */,
+				1AA9C74129B0237800395A77 /* Encode */,
+				1AA9C74029B0236500395A77 /* Track */,
+				1AA9C73F29B0235400395A77 /* Audio */,
+				1AA9C73E29B0232700395A77 /* Model */,
+				1AA9C73D29B0230500395A77 /* Decode */,
+				1AA9C73C29B022DE00395A77 /* MainTrack */,
+				1AA9C73B29B022C100395A77 /* Bottom */,
+				1AA9C73A29B0229800395A77 /* Choose */,
+				1AA9C74329B023B700395A77 /* Resources */,
+				1A7C030428D2AC9000924020 /* texture */,
 				1A27D3C929A4484200000172 /* 3rd */,
 				1AF3B63F282A36820043057A /* Main.storyboard */,
 				1AF3B642282A36820043057A /* Assets.xcassets */,
@@ -1200,6 +1308,7 @@
 				1A1B8C6729518EF300EBDB4F /* EditorConvertUtil.m in Sources */,
 				1A39AD5829A88A25000F6CFB /* EditorVideoEffect.m in Sources */,
 				1AD536EE2946B68A007F3DB6 /* MediaTimeRange.m in Sources */,
+				1AA9C74D29B02C1600395A77 /* MediaFloat.m in Sources */,
 				1AB6FC0729514F7800C7A1EA /* EditorFFmpegDecode.m in Sources */,
 				1AA394B52988EB69002EE5D4 /* LCPlayer.m in Sources */,
 				1A27399F294FEAC5006FC35D /* MediaSegment.m in Sources */,
@@ -1211,10 +1320,12 @@
 				1AD536FA2946BB56007F3DB6 /* FFMpegTool.mm in Sources */,
 				1A4D8678282CC47E001247AF /* VideoThumbnailView.m in Sources */,
 				1AD536F32946B68A007F3DB6 /* EditorTransition.m in Sources */,
+				1AA9C74A29B0270F00395A77 /* MediaClip.m in Sources */,
 				1AD536F42946B68A007F3DB6 /* MediaMaterial.m in Sources */,
 				1A59376C28AA3C3700D5DCEE /* UICollectionView+Extensions.m in Sources */,
 				1A59375128AA257700D5DCEE /* MediaChooseCell.m in Sources */,
 				1A1B72FE28D41DE6007389EE /* CachedAssetImageGenerator.m in Sources */,
+				1AA9C74729B0248200395A77 /* CanvasVideoBorderView.m in Sources */,
 				1AE3666C298E1BE500BCFB2F /* RanMultipleTrackCollectionView.m in Sources */,
 				1A6543B429498BE100F77074 /* EditorAudioPlayer.m in Sources */,
 				1A59376228AA261B00D5DCEE /* MediaBottomActionItemModel.m in Sources */,
@@ -1234,6 +1345,7 @@
 				1A96DE44295EC6BE00C02136 /* EditorMovieWrite.m in Sources */,
 				1AF3B649282A36820043057A /* main.m in Sources */,
 				1A1B8C6429518DCF00EBDB4F /* EditorVideoScale.m in Sources */,
+				1AA9C75229B062E700395A77 /* GuidelineView.m in Sources */,
 				1AE3666D298E1BE500BCFB2F /* MediaTrackCell.m in Sources */,
 				1A057A55282B989200047DE3 /* RanSegmentClipView.m in Sources */,
 				1AF0F9ED2942FC0200072808 /* EditorffmpegReader.m in Sources */,

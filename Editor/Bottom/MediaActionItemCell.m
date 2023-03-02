@@ -42,10 +42,10 @@
     self.actionLabel.text = itemModel.name;
 }
 
-- (void)setAdjustModel:(RanAdjustModel *)adjustModel {
+//- (void)setAdjustModel:(RanAdjustModel *)adjustModel {
 //    _adjustModel = adjustModel;
 //    self.actionLabel.text = adjustModel.adjustName;
-}
+//}
 
 - (UIImageView *)actionImageView {
     if (!_actionImageView) {

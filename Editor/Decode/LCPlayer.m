@@ -657,6 +657,10 @@ double synchronize_video(VideoState *is, AVFrame *src_frame, double pts) {
               pts = 0;
             }
             pts *= av_q2d(is->video_st->time_base);
+            
+            if (pts > 3) {
+//                return;
+            }
 
               if (framew == 0){
                   pts = synchronize_video(is, pFrame, pts);
@@ -829,6 +833,8 @@ return 0;
 
     is->videoStream=-1;
     is->audioStream=-1;
+    
+//    path = [[NSBundle mainBundle] pathForResource:@"640k" ofType:@"jpg"];
 
     global_video_state = is;
       

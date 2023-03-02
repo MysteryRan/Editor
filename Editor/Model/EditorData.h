@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong)NSMutableArray <MediaTrack *>*tracks;
 @property (nonatomic, assign)int fps;
 @property (nonatomic, strong)EditorMaterial *materials;
+@property (nonatomic, assign)uint32_t duration;
+@property (nonatomic, assign)uint32_t create_time;
+@property (nonatomic, assign)uint32_t update_time;
 
 @end
 

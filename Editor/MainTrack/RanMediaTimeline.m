@@ -260,12 +260,12 @@
 - (void)videoSegmentViewClick:(RanVideoSegmentView *)segmentView {
     self.selectedSegmentView = segmentView;
     
-    [self.trackPreView bringSubviewToFront:segmentView];
+//    [self.trackPreView bringSubviewToFront:segmentView];
     
-    if (self.segmentClipView.superview == nil) {
-        self.segmentClipView.delegate = self;
-        [self.trackPreView addSubview:self.segmentClipView];
-    }
+//    if (self.segmentClipView.superview == nil) {
+//        self.segmentClipView.delegate = self;
+//        [self.trackPreView addSubview:self.segmentClipView];
+//    }
     CGFloat leftOffset = 21;
     CGFloat topOffset = 1.5;
     [self.segmentClipView mas_remakeConstraints:^(MASConstraintMaker *make) {

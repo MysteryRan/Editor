@@ -40,4 +40,9 @@
     return insideTime;
 }
 
++ (NSDictionary *)modelContainerPropertyGenericClass {
+    return @{@"clip": [MediaClip class],
+    };
+}
+
 @end

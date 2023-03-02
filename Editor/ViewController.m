@@ -29,6 +29,7 @@
 #import "LCPlayer.h"
 #import "MutilpleTrackContentView.h"
 #import "MediaBottomActionView.h"
+#import "GuidelineView.h"
 
 @interface ViewController ()<EditorffmpegReaderDelegate,MR0x31FFMpegMovieDelegate,MediaBottomActionViewDelegate> {
     
@@ -202,7 +203,7 @@
         CGFloat f_totalSecond = (CGFloat)self.totalSecond;
         CGFloat progress = (CGFloat)(f_time / f_totalSecond);
         offsetX = progress * (self.timelineView.contentSize.width - self.view.frame.size.width);
-        [self.timelineView setContentOffset:CGPointMake(offsetX, 0)];
+//        [self.timelineView setContentOffset:CGPointMake(offsetX, 0)];
         self.currentTimeLab.text = [self convertSecondsTimecode:time];
     });
     
@@ -283,7 +284,7 @@
 
 - (void)setupPreView {
     self.preBackgroundView = [UIView new];
-//    self.preBackgroundView.backgroundColor = [UIColor colorWithRed:245/255.0 green:0/255.0 blue:0/255.0 alpha:1];
+    self.preBackgroundView.backgroundColor = [UIColor colorWithRed:24/255.0 green:24/255.0 blue:24/255.0 alpha:1];
     [self.view addSubview:self.preBackgroundView];
     CGFloat topOffset = [UIApplication sharedApplication].windows.firstObject.safeAreaInsets.top;
     [self.preBackgroundView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -292,6 +293,10 @@
         make.height.equalTo(self.preBackgroundView.mas_width);
     }];
     
+    self.editorData = [EditorData sharedInstance];
+    CanvasConfig *config = self.editorData.canvas_config;
+    float width = config.width;
+    float height = config.height;
     self.gpuPreView = [[GPUImageView alloc] init];
 //    [self.gpuPreView setBackgroundColorRed:1 green:0 blue:0 alpha:1];
     self.gpuPreView.fillMode = kGPUImageFillModeStretch;
@@ -300,8 +305,26 @@
         make.top.left.bottom.right.lessThanOrEqualTo(self.preBackgroundView).priorityLow();
         make.center.equalTo(self.preBackgroundView);
         make.height.lessThanOrEqualTo(self.preBackgroundView);
-        make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(1920.0/1080.0);
+        make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(width/height);
+//        make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(1080.0/1620.0);
     }];
+    
+    GuidelineView *guideline = [[GuidelineView alloc] init];
+//    guideline.backgroundColor = [UIColor redColor];
+    [self.preBackgroundView addSubview:guideline];
+    [guideline mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.preBackgroundView);
+    }];
+    
+//    UIView *v = [UIView new];
+//    v.layer.borderWidth = 2;
+//    v.layer.borderColor = [UIColor redColor].CGColor;
+//    [self.gpuPreView addSubview:v];
+//    [v mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.center.equalTo(self.gpuPreView);
+//        make.width.equalTo(self.gpuPreView).multipliedBy(1);
+//        make.height.equalTo(self.gpuPreView).multipliedBy(1);
+//    }];
 }
 
 - (void)setupPlaycontrol {

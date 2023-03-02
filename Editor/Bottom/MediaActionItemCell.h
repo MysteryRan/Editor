@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MediaBottomActionItemModel.h"
-#import "RanAdjustModel.h"
+//#import "RanAdjustModel.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) MediaBottomActionItemModel *itemModel;
 
-@property (nonatomic, strong) RanAdjustModel *adjustModel;
+//@property (nonatomic, strong) RanAdjustModel *adjustModel;
  
 @end
 

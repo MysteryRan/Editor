@@ -45,6 +45,7 @@
 - (void)segmentClick {
     UIBezierPath *trianglePath = [UIBezierPath bezierPath];
     UIView *triangleView = [UIView new];
+    triangleView.backgroundColor = [UIColor redColor];
     [self addSubview:triangleView];
     [triangleView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.right.top.bottom.equalTo(self);
@@ -61,9 +62,9 @@
         shaperLayer.path = trianglePath.CGPath;
         triangleView.layer.mask = shaperLayer;
     [self.superview bringSubviewToFront:self];
-//    if (_delegate && [_delegate respondsToSelector:@selector(videoSegmentViewClick:)]) {
-//        [_delegate videoSegmentViewClick:self];
-//    }
+    if (_delegate && [_delegate respondsToSelector:@selector(videoSegmentViewClick:)]) {
+        [_delegate videoSegmentViewClick:self];
+    }
 }
 
 - (CGSize)createContentWidth {

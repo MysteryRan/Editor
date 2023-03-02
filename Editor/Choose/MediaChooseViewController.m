@@ -284,6 +284,8 @@ static NSString *CollectionCellIdentifier = @"cell";
                 video.path = videoPath;
                 video.width = info.width;
                 video.height = info.height;
+//                video.width = 1080;
+//                video.height = 1620;
                 video.media_id = [NSString media_GUIDString];
                 
                 EditorTransition *transition = [[EditorTransition alloc] init];
@@ -292,16 +294,19 @@ static NSString *CollectionCellIdentifier = @"cell";
                 transition.path = [[NSBundle mainBundle] pathForResource:@"Heart" ofType:@"fsh"];
                 
                 MediaSegment *segment = [[MediaSegment alloc] init];
+                MediaClip *clip = [[MediaClip alloc] init];
+                segment.clip = clip;
                 segment.source_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:info.duration];
                 segment.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:start timeRangeDuration:segment.source_timerange.duration];
                 if (i == 0) {
                     CanvasConfig *config = [[CanvasConfig alloc] init];
-                    config.width = 1920;
-                    config.height = 1080;
+                    config.width = video.width;
+                    config.height = video.height;
                     config.ratio = CanvasRatioOriginal;
                     editorData.canvas_config = config;
                 }
                 
+                clip.scale = [self setNormalTransformWithVideoSize:CGSizeMake(video.width, video.height)];
                 segment.material_id = video.media_id;
                 if (i < materials.transitions.count && materials.transitions.count > 0) {
                     transition = materials.transitions[i];
@@ -323,12 +328,73 @@ static NSString *CollectionCellIdentifier = @"cell";
     
     dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         dispatch_async(dispatch_get_main_queue(), ^{
+            
+//            NSString *modelStr = [editorData yy_modelToJSONString];
+//            NSLog(@"final json %@",modelStr);
+            
+//            return;
             [hud hideAnimated:YES];
             ViewController *vc = [[ViewController alloc] init];
             vc.modalPresentationStyle = UIModalPresentationFullScreen;
             [self presentViewController:vc animated:YES completion:nil];
         });
     });
+}
+
+- (double)sizeFitCanvansSize:(CGSize)canvansSize sourceSize:(CGSize)sourceSize {
+    // 以窄边为基准
+    /*
+     720p  1080p
+     */
+    double transfrom = 0.0;
+    
+    uint64_t canvansWidth = canvansSize.width;
+    uint64_t canvansHeight = canvansSize.height;
+    double canvansRadius = canvansWidth / (canvansHeight * 1.0);
+    
+    uint64_t sourceWidth = sourceSize.width;
+    uint64_t sourceHeight = sourceSize.height;
+    double sourceRadius = sourceWidth / (sourceHeight * 1.0);
+    
+    if (canvansRadius > sourceRadius) {
+        // 高铺满 缩放宽
+        uint64_t newHeight = canvansHeight;
+        uint64_t newWidth = sourceRadius * newHeight;
+        transfrom = newWidth / (canvansWidth * 1.0);
+        
+        return transfrom;
+    } else {
+        uint64_t newWidth = canvansWidth;
+        uint64_t newHeight = newWidth / sourceRadius;
+        transfrom = newHeight / (canvansHeight * 1.0);
+        return transfrom;
+    }
+    return 1.0;
+}
+
+- (MediaFloat *)setNormalTransformWithVideoSize:(CGSize)videoSize {
+    MediaFloat *scale = [[MediaFloat alloc] init];
+    CanvasConfig *config = [EditorData sharedInstance].canvas_config;
+
+    CGSize canvansSize = CGSizeMake(config.width, config.height);
+
+    double cgaffineTransform = [self sizeFitCanvansSize:canvansSize sourceSize:CGSizeMake(videoSize.width, videoSize.height)];
+
+    uint64_t canvansWidth = canvansSize.width;
+    uint64_t canvansHeight = canvansSize.height;
+    double canvansRadius = canvansWidth / (canvansHeight * 1.0);
+
+    CGSize sourceSize = CGSizeMake(videoSize.width, videoSize.height);
+    uint64_t sourceWidth = sourceSize.width;
+    uint64_t sourceHeight = sourceSize.height;
+    double sourceRadius = sourceWidth / (sourceHeight * 1.0);
+
+    if (canvansRadius > sourceRadius) {
+        scale = [[MediaFloat alloc] initWithXValue:cgaffineTransform andYValue:1];
+    } else {
+        scale = [[MediaFloat alloc] initWithXValue:1 andYValue:cgaffineTransform];
+    }
+    return scale;
 }
 
 // 添加特效
