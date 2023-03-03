@@ -203,27 +203,9 @@
         CGFloat f_totalSecond = (CGFloat)self.totalSecond;
         CGFloat progress = (CGFloat)(f_time / f_totalSecond);
         offsetX = progress * (self.timelineView.contentSize.width - self.view.frame.size.width);
-//        [self.timelineView setContentOffset:CGPointMake(offsetX, 0)];
+        [self.timelineView setContentOffset:CGPointMake(offsetX, 0)];
         self.currentTimeLab.text = [self convertSecondsTimecode:time];
     });
-    
-//    return;
-    
-    uint64_t distance22 = time - (5000000);
-    
-    // 刚转场
-//    NSLog(@"distance %lld",distance22);
-    if (distance22 <= 2 * perFrame && distance22 >= perFrame) {
-//        [self.ffmpegReader addselectedFilter];
-    }
-    
-    uint64_t distance33 = time - (8000000);
-    
-    // 刚转场
-//    NSLog(@"distance %lld",distance22);
-    if (distance33 <= 2 * perFrame && distance33 >= perFrame) {
-//        [self.ffmpegReader deleteSelectedFilter];
-    }
     
     NSUInteger index = [self.editorData.tracks[0].segments indexOfObject:self.firstSegment];
     NSMutableArray *transtions = self.editorData.materials.transitions;
@@ -309,12 +291,12 @@
 //        make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(1080.0/1620.0);
     }];
     
-    GuidelineView *guideline = [[GuidelineView alloc] init];
+//    GuidelineView *guideline = [[GuidelineView alloc] init];
 //    guideline.backgroundColor = [UIColor redColor];
-    [self.preBackgroundView addSubview:guideline];
-    [guideline mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.edges.equalTo(self.preBackgroundView);
-    }];
+//    [self.preBackgroundView addSubview:guideline];
+//    [guideline mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.edges.equalTo(self.preBackgroundView);
+//    }];
     
 //    UIView *v = [UIView new];
 //    v.layer.borderWidth = 2;
