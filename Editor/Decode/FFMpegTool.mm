@@ -693,6 +693,7 @@ static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt, cons
      打开输入流，读取文件头信息，不会打开解码器；
      */
     //低版本是 av_open_input_file 方法
+    path = [[NSBundle mainBundle] pathForResource:@"erlutest" ofType:@"mp3"];
     const char *moviePath = [path cStringUsingEncoding:NSUTF8StringEncoding];
     
     //打开文件流，读取头信息；

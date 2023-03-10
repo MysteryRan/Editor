@@ -192,13 +192,13 @@ static NSString *CollectionCellIdentifier = @"cell";
 }
 
 - (void)bottomButtonClick {
-    if (self.selectedAssets.count != 2) {
-        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-        hud.mode = MBProgressHUDModeText;
-        hud.label.text = @"请选择两个视频";
-        [hud hideAnimated:YES afterDelay:3];
-        return;
-    }
+//    if (self.selectedAssets.count != 2) {
+//        MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//        hud.mode = MBProgressHUDModeText;
+//        hud.label.text = @"请选择两个视频";
+//        [hud hideAnimated:YES afterDelay:3];
+//        return;
+//    }
     [self ffmpegSaveLocalPath:@""];
 }
 
@@ -207,8 +207,6 @@ static NSString *CollectionCellIdentifier = @"cell";
     __block EditorData *editorData = [EditorData sharedInstance];
     __block EditorMaterial *materials = [[EditorMaterial alloc] init];
     editorData.materials = materials;
-    
-    dispatch_group_t group = dispatch_group_create();
     
     // 主轨
     MediaTrack *mainTrack = [[MediaTrack alloc] init];
@@ -245,94 +243,96 @@ static NSString *CollectionCellIdentifier = @"cell";
     MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
     hud.mode = MBProgressHUDModeDeterminate;
     hud.label.text = @"正在拷贝相册资源";
-    
     __block uint64_t start = 0;
-    for (int i = 0; i < self.selectedAssets.count; i ++) {
-        PHAsset *a = self.selectedAssets[i];
-        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-        options.version = PHVideoRequestOptionsVersionCurrent;
-        options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
-        options.networkAccessAllowed = YES;
-        dispatch_group_enter(group);
-        [[PHImageManager defaultManager] requestAVAssetForVideo:a options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
-            AVURLAsset *ass = (AVURLAsset *)asset;
-            NSString *lowName = [[ass.URL.absoluteString pathExtension] lowercaseString];
-            NSString *extension;
-            if ([lowName isEqualToString:@"mov"]) {
-                extension = @"mov";
-            } else if ([lowName isEqualToString:@"mp4"]) {
-                extension = @"mp4";
-            } else {
-                extension = @"mp4";
-            }
-            
-            CFUUIDRef theUUID = CFUUIDCreate(NULL);
-            CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-            CFRelease(theUUID);
-            NSString *u = (__bridge_transfer NSString *)string ;
-            NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
-            NSTimeInterval time=[date timeIntervalSince1970]*1000;// *1000 是精确到毫秒，不乘就是精确到秒
-            NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
-            u = [self findVideoPath:[NSString stringWithFormat:@"iOSALBUM@%@@%@.%@",u,timeString,extension]];
-            
-            NSLog(@"%@",u);
-            
-            if ([FFMpegTool exportAblumPhoto:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
-                MediaInfo *info = [FFMpegTool openStreamFunc:u];
-                NSString *videoPath = u;
-                EditorVideo *video = [[EditorVideo alloc] init];
-                video.path = videoPath;
-                video.width = info.width;
-                video.height = info.height;
-//                video.width = 1080;
-//                video.height = 1620;
-                video.media_id = [NSString media_GUIDString];
-                
-                EditorTransition *transition = [[EditorTransition alloc] init];
-                transition.type = @"transition";
-                transition.duration = 2000000;
-                transition.path = [[NSBundle mainBundle] pathForResource:@"Heart" ofType:@"fsh"];
-                
-                MediaSegment *segment = [[MediaSegment alloc] init];
-                MediaClip *clip = [[MediaClip alloc] init];
-                segment.clip = clip;
-                segment.source_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:info.duration];
-                segment.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:start timeRangeDuration:segment.source_timerange.duration];
-                if (i == 0) {
-                    CanvasConfig *config = [[CanvasConfig alloc] init];
-                    config.width = video.width;
-                    config.height = video.height;
-                    config.ratio = CanvasRatioOriginal;
-                    editorData.canvas_config = config;
-                }
-                
-                clip.scale = [self setNormalTransformWithVideoSize:CGSizeMake(video.width, video.height)];
-                segment.material_id = video.media_id;
-                if (i < materials.transitions.count && materials.transitions.count > 0) {
-                    transition = materials.transitions[i];
-                }
-                if (transition) {
-                    start += (info.duration - transition.duration);
+    // 1.创建一个串行队列，保证for循环依次执行
+    dispatch_queue_t serialQueue = dispatch_queue_create("serialQueue", DISPATCH_QUEUE_SERIAL);
+    // 2.异步执行任务
+    dispatch_async(serialQueue, ^{
+        // 3.创建一个数目为1的信号量，用于“卡”for循环，等上次循环结束在执行下一次的for循环
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        
+        for (int i = 0; i < self.selectedAssets.count; i ++) {
+            // 开始执行for循环，让信号量-1，这样下次操作须等信号量>=0才会继续,否则下次操作将永久停止
+            PHAsset *a = self.selectedAssets[i];
+            PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+            options.version = PHVideoRequestOptionsVersionCurrent;
+            options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+            options.networkAccessAllowed = YES;
+            [[PHImageManager defaultManager] requestAVAssetForVideo:a options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+                AVURLAsset *ass = (AVURLAsset *)asset;
+                NSLog(@"second  -> %f",CMTimeGetSeconds(asset.duration));
+                NSString *lowName = [[ass.URL.absoluteString pathExtension] lowercaseString];
+                NSString *extension;
+                if ([lowName isEqualToString:@"mov"]) {
+                    extension = @"mov";
+                } else if ([lowName isEqualToString:@"mp4"]) {
+                    extension = @"mp4";
                 } else {
-                    start += info.duration;
+                    extension = @"mp4";
                 }
                 
-                [materials.transitions addObject:transition];
-                [materials.videos addObject:video];
-                [mainTrack.segments addObject:segment];
-            }
-             
-            dispatch_group_leave(group);
-        }];
-    }
-    
-    dispatch_group_notify(group, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+                CFUUIDRef theUUID = CFUUIDCreate(NULL);
+                CFStringRef string = CFUUIDCreateString(NULL, theUUID);
+                CFRelease(theUUID);
+                NSString *u = (__bridge_transfer NSString *)string ;
+                NSDate* date = [NSDate dateWithTimeIntervalSinceNow:0];//获取当前时间0秒后的时间
+                NSTimeInterval time=[date timeIntervalSince1970]*1000;// *1000 是精确到毫秒，不乘就是精确到秒
+                NSString *timeString = [NSString stringWithFormat:@"%.0f", time];
+                u = [self findVideoPath:[NSString stringWithFormat:@"iOSALBUM@%@@%@.%@",u,timeString,extension]];
+                
+                NSLog(@"%@",u);
+                
+                if ([FFMpegTool exportAblumPhoto:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
+                    MediaInfo *info = [FFMpegTool openStreamFunc:u];
+                    NSString *videoPath = u;
+                    EditorVideo *video = [[EditorVideo alloc] init];
+                    video.path = videoPath;
+                    video.width = info.width;
+                    video.height = info.height;
+                    //                video.width = 1080;
+                    //                video.height = 1620;
+                    video.media_id = [NSString media_GUIDString];
+                    
+                    EditorTransition *transition = [[EditorTransition alloc] init];
+                    transition.type = @"transition";
+                    transition.duration = 2000000;
+                    transition.path = [[NSBundle mainBundle] pathForResource:@"Heart" ofType:@"fsh"];
+                    
+                    MediaSegment *segment = [[MediaSegment alloc] init];
+                    MediaClip *clip = [[MediaClip alloc] init];
+                    segment.clip = clip;
+                    segment.source_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:info.duration];
+                    segment.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:start timeRangeDuration:segment.source_timerange.duration];
+                    if (i == 0) {
+                        CanvasConfig *config = [[CanvasConfig alloc] init];
+                        config.width = video.width;
+                        config.height = video.height;
+                        config.ratio = CanvasRatioOriginal;
+                        editorData.canvas_config = config;
+                    }
+                    
+                    clip.scale = [self setNormalTransformWithVideoSize:CGSizeMake(video.width, video.height)];
+                    segment.material_id = video.media_id;
+                    if (i < materials.transitions.count && materials.transitions.count > 0) {
+                        transition = materials.transitions[i];
+                    }
+                    if (transition) {
+                        start += (info.duration - transition.duration);
+                    } else {
+                        start += info.duration;
+                    }
+                    
+                    [materials.transitions addObject:transition];
+                    [materials.videos addObject:video];
+                    [mainTrack.segments addObject:segment];
+                    
+                    dispatch_semaphore_signal(sema);
+                }
+            }];
+            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+        }
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            
-//            NSString *modelStr = [editorData yy_modelToJSONString];
-//            NSLog(@"final json %@",modelStr);
-            
-//            return;
             [hud hideAnimated:YES];
             ViewController *vc = [[ViewController alloc] init];
             vc.modalPresentationStyle = UIModalPresentationFullScreen;

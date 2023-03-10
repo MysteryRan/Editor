@@ -114,6 +114,7 @@
 		1A7C036A28D2AC9100924020 /* clipname_032.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C033628D2AC9000924020 /* clipname_032.png */; };
 		1A7C036B28D2AC9100924020 /* clipname_033.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C033728D2AC9000924020 /* clipname_033.png */; };
 		1A7C036C28D2AC9100924020 /* clipname_027.png in Resources */ = {isa = PBXBuildFile; fileRef = 1A7C033828D2AC9000924020 /* clipname_027.png */; };
+		1A8C822529B5AF4900CAE811 /* audio543.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1A8C822429B5AF4900CAE811 /* audio543.mp3 */; };
 		1A96DE44295EC6BE00C02136 /* EditorMovieWrite.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A96DE43295EC6BE00C02136 /* EditorMovieWrite.m */; };
 		1A98746B2950320B00ED2D32 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A1782862941BEE60025D6FD /* AVFoundation.framework */; };
 		1A9C6F2A294ABD2400E1FA0E /* OtherTool.m in Sources */ = {isa = PBXBuildFile; fileRef = 1A9C6F28294ABD2400E1FA0E /* OtherTool.m */; };
@@ -134,6 +135,24 @@
 		1AD536F42946B68A007F3DB6 /* MediaMaterial.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD536EB2946B68A007F3DB6 /* MediaMaterial.m */; };
 		1AD536F72946BAF5007F3DB6 /* MediaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD536F52946BAF5007F3DB6 /* MediaInfo.m */; };
 		1AD536FA2946BB56007F3DB6 /* FFMpegTool.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1AD536F82946BB56007F3DB6 /* FFMpegTool.mm */; };
+		1AD799D829B86D580067AA88 /* FFAudioResample0x20.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799D229B86D580067AA88 /* FFAudioResample0x20.m */; };
+		1AD799D929B86D580067AA88 /* FFDecoder0x20.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799D329B86D580067AA88 /* FFDecoder0x20.m */; };
+		1AD799DA29B86D580067AA88 /* FFPlayer0x20.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799D429B86D580067AA88 /* FFPlayer0x20.m */; };
+		1AD799EB29B86D670067AA88 /* MRConvertUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799DF29B86D660067AA88 /* MRConvertUtil.m */; };
+		1AD799EC29B86D670067AA88 /* MRAbstractLogger.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799E029B86D660067AA88 /* MRAbstractLogger.m */; };
+		1AD799ED29B86D670067AA88 /* FFVideoScale.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799E829B86D660067AA88 /* FFVideoScale.m */; };
+		1AD799EE29B86D670067AA88 /* MRThread.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AD799E929B86D660067AA88 /* MRThread.m */; };
+		1AD799F129B86EEC0067AA88 /* erlutest.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1AD799EF29B86EEC0067AA88 /* erlutest.mp3 */; };
+		1AD799F229B86EEC0067AA88 /* longtest.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 1AD799F029B86EEC0067AA88 /* longtest.mp3 */; };
+		1ADBEC9A29BABF330069BA02 /* FFSyncClock0x32.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBEC9629BABF330069BA02 /* FFSyncClock0x32.m */; };
+		1ADBEC9B29BABF330069BA02 /* FFAudioResample0x32.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBEC9729BABF330069BA02 /* FFAudioResample0x32.m */; };
+		1ADBEC9C29BABF330069BA02 /* FFPlayer0x32.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBEC9829BABF330069BA02 /* FFPlayer0x32.m */; };
+		1ADBEC9D29BABF330069BA02 /* FFDecoder0x32.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBEC9929BABF330069BA02 /* FFDecoder0x32.m */; };
+		1ADBECA729BABFEF0069BA02 /* MR0x32AudioQueueRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBECA129BABFEF0069BA02 /* MR0x32AudioQueueRenderer.m */; };
+		1ADBECA829BABFEF0069BA02 /* MR0x32AudioUnitRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBECA229BABFEF0069BA02 /* MR0x32AudioUnitRenderer.m */; };
+		1ADBECA929BABFEF0069BA02 /* MR0x32AudioRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBECA629BABFEF0069BA02 /* MR0x32AudioRenderer.m */; };
+		1ADBECAB29BAD6F80069BA02 /* sample.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 1ADBECAA29BAD6F80069BA02 /* sample.mp4 */; };
+		1ADBECAE29BAF13E0069BA02 /* EditorFilterUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 1ADBECAD29BAF13E0069BA02 /* EditorFilterUtil.m */; };
 		1AE36664298DECD800BCFB2F /* replaceCrop.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 1AE36663298DECD800BCFB2F /* replaceCrop.fsh */; };
 		1AE3666B298E1BE500BCFB2F /* MutilpleTrackContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AE36667298E1BE400BCFB2F /* MutilpleTrackContentView.m */; };
 		1AE3666C298E1BE500BCFB2F /* RanMultipleTrackCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1AE36669298E1BE400BCFB2F /* RanMultipleTrackCollectionView.m */; };
@@ -428,6 +447,7 @@
 		1A7C033628D2AC9000924020 /* clipname_032.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clipname_032.png; sourceTree = "<group>"; };
 		1A7C033728D2AC9000924020 /* clipname_033.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clipname_033.png; sourceTree = "<group>"; };
 		1A7C033828D2AC9000924020 /* clipname_027.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = clipname_027.png; sourceTree = "<group>"; };
+		1A8C822429B5AF4900CAE811 /* audio543.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = audio543.mp3; sourceTree = "<group>"; };
 		1A96DE42295EC6BE00C02136 /* EditorMovieWrite.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditorMovieWrite.h; sourceTree = "<group>"; };
 		1A96DE43295EC6BE00C02136 /* EditorMovieWrite.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorMovieWrite.m; sourceTree = "<group>"; };
 		1A9C6F28294ABD2400E1FA0E /* OtherTool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OtherTool.m; sourceTree = "<group>"; };
@@ -468,6 +488,44 @@
 		1AD536F62946BAF5007F3DB6 /* MediaInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaInfo.h; sourceTree = "<group>"; };
 		1AD536F82946BB56007F3DB6 /* FFMpegTool.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = FFMpegTool.mm; sourceTree = "<group>"; };
 		1AD536F92946BB56007F3DB6 /* FFMpegTool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFMpegTool.h; sourceTree = "<group>"; };
+		1AD799D229B86D580067AA88 /* FFAudioResample0x20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFAudioResample0x20.m; sourceTree = "<group>"; };
+		1AD799D329B86D580067AA88 /* FFDecoder0x20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFDecoder0x20.m; sourceTree = "<group>"; };
+		1AD799D429B86D580067AA88 /* FFPlayer0x20.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFPlayer0x20.m; sourceTree = "<group>"; };
+		1AD799D529B86D580067AA88 /* FFAudioResample0x20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFAudioResample0x20.h; sourceTree = "<group>"; };
+		1AD799D629B86D580067AA88 /* FFDecoder0x20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFDecoder0x20.h; sourceTree = "<group>"; };
+		1AD799D729B86D580067AA88 /* FFPlayer0x20.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayer0x20.h; sourceTree = "<group>"; };
+		1AD799DC29B86D660067AA88 /* MRAbstractLogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRAbstractLogger.h; sourceTree = "<group>"; };
+		1AD799DD29B86D660067AA88 /* MRThread.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRThread.h; sourceTree = "<group>"; };
+		1AD799DE29B86D660067AA88 /* FFVideoScale.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFVideoScale.h; sourceTree = "<group>"; };
+		1AD799DF29B86D660067AA88 /* MRConvertUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRConvertUtil.m; sourceTree = "<group>"; };
+		1AD799E029B86D660067AA88 /* MRAbstractLogger.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRAbstractLogger.m; sourceTree = "<group>"; };
+		1AD799E329B86D660067AA88 /* FFPlayerHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayerHeader.h; sourceTree = "<group>"; };
+		1AD799E529B86D660067AA88 /* FFPlayerInternalHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayerInternalHeader.h; sourceTree = "<group>"; };
+		1AD799E629B86D660067AA88 /* FFPlayerFrameHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayerFrameHeader.h; sourceTree = "<group>"; };
+		1AD799E729B86D660067AA88 /* FFPlayerPacketHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayerPacketHeader.h; sourceTree = "<group>"; };
+		1AD799E829B86D660067AA88 /* FFVideoScale.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFVideoScale.m; sourceTree = "<group>"; };
+		1AD799E929B86D660067AA88 /* MRThread.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRThread.m; sourceTree = "<group>"; };
+		1AD799EA29B86D660067AA88 /* MRConvertUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRConvertUtil.h; sourceTree = "<group>"; };
+		1AD799EF29B86EEC0067AA88 /* erlutest.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = erlutest.mp3; sourceTree = "<group>"; };
+		1AD799F029B86EEC0067AA88 /* longtest.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = longtest.mp3; sourceTree = "<group>"; };
+		1ADBEC9229BABF330069BA02 /* FFAudioResample0x32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFAudioResample0x32.h; sourceTree = "<group>"; };
+		1ADBEC9329BABF330069BA02 /* FFSyncClock0x32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFSyncClock0x32.h; sourceTree = "<group>"; };
+		1ADBEC9429BABF330069BA02 /* FFPlayer0x32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFPlayer0x32.h; sourceTree = "<group>"; };
+		1ADBEC9529BABF330069BA02 /* FFDecoder0x32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFDecoder0x32.h; sourceTree = "<group>"; };
+		1ADBEC9629BABF330069BA02 /* FFSyncClock0x32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFSyncClock0x32.m; sourceTree = "<group>"; };
+		1ADBEC9729BABF330069BA02 /* FFAudioResample0x32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFAudioResample0x32.m; sourceTree = "<group>"; };
+		1ADBEC9829BABF330069BA02 /* FFPlayer0x32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFPlayer0x32.m; sourceTree = "<group>"; };
+		1ADBEC9929BABF330069BA02 /* FFDecoder0x32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FFDecoder0x32.m; sourceTree = "<group>"; };
+		1ADBECA029BABFEF0069BA02 /* MR0x32AudioUnitRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MR0x32AudioUnitRenderer.h; sourceTree = "<group>"; };
+		1ADBECA129BABFEF0069BA02 /* MR0x32AudioQueueRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MR0x32AudioQueueRenderer.m; sourceTree = "<group>"; };
+		1ADBECA229BABFEF0069BA02 /* MR0x32AudioUnitRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MR0x32AudioUnitRenderer.m; sourceTree = "<group>"; };
+		1ADBECA329BABFEF0069BA02 /* MR0x32AudioRendererImpProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MR0x32AudioRendererImpProtocol.h; sourceTree = "<group>"; };
+		1ADBECA429BABFEF0069BA02 /* MR0x32AudioQueueRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MR0x32AudioQueueRenderer.h; sourceTree = "<group>"; };
+		1ADBECA529BABFEF0069BA02 /* MR0x32AudioRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MR0x32AudioRenderer.h; sourceTree = "<group>"; };
+		1ADBECA629BABFEF0069BA02 /* MR0x32AudioRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MR0x32AudioRenderer.m; sourceTree = "<group>"; };
+		1ADBECAA29BAD6F80069BA02 /* sample.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sample.mp4; sourceTree = "<group>"; };
+		1ADBECAC29BAF13E0069BA02 /* EditorFilterUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EditorFilterUtil.h; sourceTree = "<group>"; };
+		1ADBECAD29BAF13E0069BA02 /* EditorFilterUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EditorFilterUtil.m; sourceTree = "<group>"; };
 		1AE36663298DECD800BCFB2F /* replaceCrop.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = replaceCrop.fsh; sourceTree = "<group>"; };
 		1AE36665298E1BE300BCFB2F /* MutilpleTrackContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MutilpleTrackContentView.h; sourceTree = "<group>"; };
 		1AE36666298E1BE400BCFB2F /* RanMultipleTrackCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RanMultipleTrackCollectionView.h; sourceTree = "<group>"; };
@@ -928,6 +986,12 @@
 				1A9C6F28294ABD2400E1FA0E /* OtherTool.m */,
 				1AD536F92946BB56007F3DB6 /* FFMpegTool.h */,
 				1AD536F82946BB56007F3DB6 /* FFMpegTool.mm */,
+				1ADBECAA29BAD6F80069BA02 /* sample.mp4 */,
+				1AD799EF29B86EEC0067AA88 /* erlutest.mp3 */,
+				1AD799F029B86EEC0067AA88 /* longtest.mp3 */,
+				1ADBEC9129BABF330069BA02 /* 0x32 */,
+				1AD799DB29B86D660067AA88 /* common */,
+				1AD799D129B86D580067AA88 /* 0x20 */,
 			);
 			path = Decode;
 			sourceTree = "<group>";
@@ -1015,6 +1079,8 @@
 				1A1B8C5529518DCE00EBDB4F /* EditorVideoScale.m */,
 				1A1B8C6529518EF300EBDB4F /* EditorConvertUtil.h */,
 				1A1B8C6629518EF300EBDB4F /* EditorConvertUtil.m */,
+				1ADBECAC29BAF13E0069BA02 /* EditorFilterUtil.h */,
+				1ADBECAD29BAF13E0069BA02 /* EditorFilterUtil.m */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -1044,6 +1110,100 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		1AD799D129B86D580067AA88 /* 0x20 */ = {
+			isa = PBXGroup;
+			children = (
+				1AD799D229B86D580067AA88 /* FFAudioResample0x20.m */,
+				1AD799D329B86D580067AA88 /* FFDecoder0x20.m */,
+				1AD799D429B86D580067AA88 /* FFPlayer0x20.m */,
+				1AD799D529B86D580067AA88 /* FFAudioResample0x20.h */,
+				1AD799D629B86D580067AA88 /* FFDecoder0x20.h */,
+				1AD799D729B86D580067AA88 /* FFPlayer0x20.h */,
+			);
+			path = 0x20;
+			sourceTree = "<group>";
+		};
+		1AD799DB29B86D660067AA88 /* common */ = {
+			isa = PBXGroup;
+			children = (
+				1AD799DC29B86D660067AA88 /* MRAbstractLogger.h */,
+				1AD799DD29B86D660067AA88 /* MRThread.h */,
+				1AD799DE29B86D660067AA88 /* FFVideoScale.h */,
+				1AD799DF29B86D660067AA88 /* MRConvertUtil.m */,
+				1AD799E029B86D660067AA88 /* MRAbstractLogger.m */,
+				1AD799E129B86D660067AA88 /* headers */,
+				1AD799E829B86D660067AA88 /* FFVideoScale.m */,
+				1AD799E929B86D660067AA88 /* MRThread.m */,
+				1AD799EA29B86D660067AA88 /* MRConvertUtil.h */,
+			);
+			path = common;
+			sourceTree = "<group>";
+		};
+		1AD799E129B86D660067AA88 /* headers */ = {
+			isa = PBXGroup;
+			children = (
+				1AD799E229B86D660067AA88 /* public */,
+				1AD799E429B86D660067AA88 /* private */,
+			);
+			path = headers;
+			sourceTree = "<group>";
+		};
+		1AD799E229B86D660067AA88 /* public */ = {
+			isa = PBXGroup;
+			children = (
+				1AD799E329B86D660067AA88 /* FFPlayerHeader.h */,
+			);
+			path = public;
+			sourceTree = "<group>";
+		};
+		1AD799E429B86D660067AA88 /* private */ = {
+			isa = PBXGroup;
+			children = (
+				1AD799E529B86D660067AA88 /* FFPlayerInternalHeader.h */,
+				1AD799E629B86D660067AA88 /* FFPlayerFrameHeader.h */,
+				1AD799E729B86D660067AA88 /* FFPlayerPacketHeader.h */,
+			);
+			path = private;
+			sourceTree = "<group>";
+		};
+		1ADBEC9129BABF330069BA02 /* 0x32 */ = {
+			isa = PBXGroup;
+			children = (
+				1ADBEC9E29BABFEF0069BA02 /* Audio */,
+				1ADBEC9229BABF330069BA02 /* FFAudioResample0x32.h */,
+				1ADBEC9329BABF330069BA02 /* FFSyncClock0x32.h */,
+				1ADBEC9429BABF330069BA02 /* FFPlayer0x32.h */,
+				1ADBEC9529BABF330069BA02 /* FFDecoder0x32.h */,
+				1ADBEC9629BABF330069BA02 /* FFSyncClock0x32.m */,
+				1ADBEC9729BABF330069BA02 /* FFAudioResample0x32.m */,
+				1ADBEC9829BABF330069BA02 /* FFPlayer0x32.m */,
+				1ADBEC9929BABF330069BA02 /* FFDecoder0x32.m */,
+			);
+			path = 0x32;
+			sourceTree = "<group>";
+		};
+		1ADBEC9E29BABFEF0069BA02 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				1ADBEC9F29BABFEF0069BA02 /* Imp */,
+				1ADBECA529BABFEF0069BA02 /* MR0x32AudioRenderer.h */,
+				1ADBECA629BABFEF0069BA02 /* MR0x32AudioRenderer.m */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		1ADBEC9F29BABFEF0069BA02 /* Imp */ = {
+			isa = PBXGroup;
+			children = (
+				1ADBECA029BABFEF0069BA02 /* MR0x32AudioUnitRenderer.h */,
+				1ADBECA129BABFEF0069BA02 /* MR0x32AudioQueueRenderer.m */,
+				1ADBECA229BABFEF0069BA02 /* MR0x32AudioUnitRenderer.m */,
+				1ADBECA329BABFEF0069BA02 /* MR0x32AudioRendererImpProtocol.h */,
+				1ADBECA429BABFEF0069BA02 /* MR0x32AudioQueueRenderer.h */,
+			);
+			path = Imp;
+			sourceTree = "<group>";
+		};
 		1AF3B62A282A36820043057A = {
 			isa = PBXGroup;
 			children = (
@@ -1065,6 +1225,7 @@
 		1AF3B635282A36820043057A /* Editor */ = {
 			isa = PBXGroup;
 			children = (
+				1A8C822429B5AF4900CAE811 /* audio543.mp3 */,
 				1AF3B636282A36820043057A /* AppDelegate.h */,
 				1AF3B637282A36820043057A /* AppDelegate.m */,
 				1AF3B639282A36820043057A /* SceneDelegate.h */,
@@ -1185,6 +1346,7 @@
 				1A7C035A28D2AC9100924020 /* clipname_037.png in Resources */,
 				1A7C033928D2AC9100924020 /* clipname_002.png in Resources */,
 				1A7C035628D2AC9100924020 /* clipname_051.png in Resources */,
+				1AD799F129B86EEC0067AA88 /* erlutest.mp3 in Resources */,
 				1A7C036628D2AC9100924020 /* clipname_024.png in Resources */,
 				1A7C034428D2AC9100924020 /* clipname_010.png in Resources */,
 				1A2FBCBF29484812002742E8 /* ani_info.json in Resources */,
@@ -1207,6 +1369,7 @@
 				1A27D47A29A4484200000172 /* libavcodec.pc in Resources */,
 				1AE36664298DECD800BCFB2F /* replaceCrop.fsh in Resources */,
 				1A1AE8A128A4A2740091C9CF /* Heart.fsh in Resources */,
+				1ADBECAB29BAD6F80069BA02 /* sample.mp4 in Resources */,
 				1A7C035C28D2AC9100924020 /* clipname_022.png in Resources */,
 				1A27D47B29A4484200000172 /* libavformat.pc in Resources */,
 				1A7C033E28D2AC9100924020 /* clipname_001.png in Resources */,
@@ -1229,6 +1392,7 @@
 				1A7C036828D2AC9100924020 /* clipname_018.png in Resources */,
 				1A7C035428D2AC9100924020 /* clipname_047.png in Resources */,
 				1A7C036728D2AC9100924020 /* clipname_030.png in Resources */,
+				1AD799F229B86EEC0067AA88 /* longtest.mp3 in Resources */,
 				1A7C035928D2AC9100924020 /* clipname_023.png in Resources */,
 				1A27D47D29A4484200000172 /* libavfilter.pc in Resources */,
 				1A7C035128D2AC9100924020 /* clipname_043.png in Resources */,
@@ -1244,6 +1408,7 @@
 				1A7C033A28D2AC9100924020 /* clipname_016.png in Resources */,
 				1A7C034B28D2AC9100924020 /* clipname_012.png in Resources */,
 				1A7C034D28D2AC9100924020 /* clipname_049.png in Resources */,
+				1A8C822529B5AF4900CAE811 /* audio543.mp3 in Resources */,
 				1A7C035328D2AC9100924020 /* clipname_046.png in Resources */,
 				1A7C035028D2AC9100924020 /* clipname_041.png in Resources */,
 				1A39AD5529A8879C000F6CFB /* monochrome.fsh in Resources */,
@@ -1302,11 +1467,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				1A3CE9DB283378C700703A19 /* MediaTimelineRuler.m in Sources */,
+				1AD799D829B86D580067AA88 /* FFAudioResample0x20.m in Sources */,
+				1AD799ED29B86D670067AA88 /* FFVideoScale.m in Sources */,
 				1AC02C5E294C0A3200142A39 /* FFPlayPlayer.mm in Sources */,
+				1AD799EE29B86D670067AA88 /* MRThread.m in Sources */,
 				1AD536F72946BAF5007F3DB6 /* MediaInfo.m in Sources */,
 				1AAF28DF2892620000554CAF /* MediaBottomActionView.m in Sources */,
 				1A1B8C6729518EF300EBDB4F /* EditorConvertUtil.m in Sources */,
 				1A39AD5829A88A25000F6CFB /* EditorVideoEffect.m in Sources */,
+				1ADBECA929BABFEF0069BA02 /* MR0x32AudioRenderer.m in Sources */,
 				1AD536EE2946B68A007F3DB6 /* MediaTimeRange.m in Sources */,
 				1AA9C74D29B02C1600395A77 /* MediaFloat.m in Sources */,
 				1AB6FC0729514F7800C7A1EA /* EditorFFmpegDecode.m in Sources */,
@@ -1314,12 +1483,16 @@
 				1A27399F294FEAC5006FC35D /* MediaSegment.m in Sources */,
 				1A057A53282B989200047DE3 /* RanVideoTrackPreview.m in Sources */,
 				1A6543B729498C3000F77074 /* EditorAudioMixEngine.m in Sources */,
+				1ADBEC9A29BABF330069BA02 /* FFSyncClock0x32.m in Sources */,
 				1A2A889929A33653009F53D3 /* MediaActionItemCell.m in Sources */,
 				1ACF7461294FECE6007CC538 /* EditorVideo.m in Sources */,
 				1A59375628AA25A800D5DCEE /* UIImage+BundleImage.m in Sources */,
+				1ADBEC9C29BABF330069BA02 /* FFPlayer0x32.m in Sources */,
 				1AD536FA2946BB56007F3DB6 /* FFMpegTool.mm in Sources */,
 				1A4D8678282CC47E001247AF /* VideoThumbnailView.m in Sources */,
+				1ADBECAE29BAF13E0069BA02 /* EditorFilterUtil.m in Sources */,
 				1AD536F32946B68A007F3DB6 /* EditorTransition.m in Sources */,
+				1AD799DA29B86D580067AA88 /* FFPlayer0x20.m in Sources */,
 				1AA9C74A29B0270F00395A77 /* MediaClip.m in Sources */,
 				1AD536F42946B68A007F3DB6 /* MediaMaterial.m in Sources */,
 				1A59376C28AA3C3700D5DCEE /* UICollectionView+Extensions.m in Sources */,
@@ -1339,19 +1512,26 @@
 				1A057A54282B989200047DE3 /* RanVideoSegmentView.m in Sources */,
 				1AF3B638282A36820043057A /* AppDelegate.m in Sources */,
 				1A59374A28AA252E00D5DCEE /* MediaChooseViewController.m in Sources */,
+				1AD799EC29B86D670067AA88 /* MRAbstractLogger.m in Sources */,
+				1ADBECA829BABFEF0069BA02 /* MR0x32AudioUnitRenderer.m in Sources */,
 				1A59375328AA257700D5DCEE /* MediaChooseListView.m in Sources */,
 				1AE36670298E1CA800BCFB2F /* MutilpleTrackCollectionViewFlowLayout.m in Sources */,
+				1ADBEC9D29BABF330069BA02 /* FFDecoder0x32.m in Sources */,
+				1AD799D929B86D580067AA88 /* FFDecoder0x20.m in Sources */,
 				1A057A57282B989200047DE3 /* RanMediaTimeline.m in Sources */,
 				1A96DE44295EC6BE00C02136 /* EditorMovieWrite.m in Sources */,
 				1AF3B649282A36820043057A /* main.m in Sources */,
 				1A1B8C6429518DCF00EBDB4F /* EditorVideoScale.m in Sources */,
 				1AA9C75229B062E700395A77 /* GuidelineView.m in Sources */,
+				1ADBEC9B29BABF330069BA02 /* FFAudioResample0x32.m in Sources */,
 				1AE3666D298E1BE500BCFB2F /* MediaTrackCell.m in Sources */,
 				1A057A55282B989200047DE3 /* RanSegmentClipView.m in Sources */,
 				1AF0F9ED2942FC0200072808 /* EditorffmpegReader.m in Sources */,
 				1A2FBCBD29484558002742E8 /* EditorSticker.m in Sources */,
 				1AD536F02946B68A007F3DB6 /* EditorData.m in Sources */,
+				1AD799EB29B86D670067AA88 /* MRConvertUtil.m in Sources */,
 				1A27D48829A44F9A00000172 /* MediaTrack.m in Sources */,
+				1ADBECA729BABFEF0069BA02 /* MR0x32AudioQueueRenderer.m in Sources */,
 				1A9C6F2A294ABD2400E1FA0E /* OtherTool.m in Sources */,
 				1AB7CA46294FF8F900F69BA4 /* CanvasConfig.m in Sources */,
 				1A59376828AA266900D5DCEE /* MediaChooseListCell.m in Sources */,

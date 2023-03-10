@@ -59,7 +59,7 @@ extern "C" {
 
 #define VIDEO_PICTURE_QUEUE_SIZE 1
 
-#define DEFAULT_AV_SYNC_TYPE AV_SYNC_EXTERNAL_MASTER //AV_SYNC_VIDEO_MASTER
+#define DEFAULT_AV_SYNC_TYPE AV_SYNC_AUDIO_MASTER //AV_SYNC_VIDEO_MASTER
 
 typedef struct VideoPicture {
   AVFrame *bmp;
@@ -163,10 +163,7 @@ enum {
 @implementation LCPlayer
 
 void packet_queue_init(PacketQueue *q) {
-  memset(q, 0, sizeof(PacketQueue));
-//  q->mutex = SDL_CreateMutex();
-//  q->cond = SDL_CreateCond();
-    
+    memset(q, 0, sizeof(PacketQueue));
     pthread_mutex_init(&(q->mutex),NULL);
     pthread_cond_init(&(q->cond),NULL);
 }
@@ -230,22 +227,17 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
 - (int)packet_queue_get:(PacketQueue *)q withPkt:(AVPacket *)pkt withB:(int)block {
     AVPacketList *pkt1;
     int ret;
-
-      pthread_mutex_lock(&(q->mutex));
-      
-    
+    pthread_mutex_lock(&(q->mutex));
     for(;;) {
-      
         if(global_video_state->quit) {
-        ret = -1;
-        break;
-      }
-
-      pkt1 = q->first_pkt;
-      if (pkt1) {
-        q->first_pkt = pkt1->next;
+            ret = -1;
+            break;
+        }
+        pkt1 = q->first_pkt;
+        if (pkt1) {
+            q->first_pkt = pkt1->next;
         if (!q->first_pkt)
-      q->last_pkt = NULL;
+            q->last_pkt = NULL;
         q->nb_packets--;
         q->size -= pkt1->pkt.size;
         *pkt = pkt1->pkt;
@@ -256,7 +248,6 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
         ret = 0;
         break;
       } else {
-          
           pthread_cond_wait(&(q->cond), &(q->mutex));
       }
     }
@@ -266,39 +257,40 @@ int packet_queue_put(PacketQueue *q, AVPacket *pkt) {
 }
 
 double get_audio_clock(VideoState *is) {
-  double pts;
-  int hw_buf_size, bytes_per_sec, n;
-  
-  pts = is->audio_clock; /* maintained in the audio thread */
-  hw_buf_size = is->audio_buf_size - is->audio_buf_index;
-  bytes_per_sec = 0;
-  n = is->audio_ctx->channels * 2;
-  if(is->audio_st) {
-    bytes_per_sec = is->audio_ctx->sample_rate * n;
-  }
-  if(bytes_per_sec) {
-    pts -= (double)hw_buf_size / bytes_per_sec;
-  }
-  return pts;
+    double pts;
+    int hw_buf_size, bytes_per_sec, n;
+    
+    pts = is->audio_clock; /* maintained in the audio thread */
+    hw_buf_size = is->audio_buf_size - is->audio_buf_index;
+    bytes_per_sec = 0;
+    n = is->audio_ctx->channels * 2;
+    if(is->audio_st) {
+        bytes_per_sec = is->audio_ctx->sample_rate * n;
+    }
+    if(bytes_per_sec) {
+        pts -= (double)hw_buf_size / bytes_per_sec;
+    }
+    return pts;
 }
-double get_video_clock(VideoState *is) {
-  double delta;
 
-  delta = (av_gettime() - is->video_current_pts_time) / 1000000.0;
-  return is->video_current_pts + delta;
+double get_video_clock(VideoState *is) {
+    double delta;
+    delta = (av_gettime() - is->video_current_pts_time) / 1000000.0;
+    return is->video_current_pts + delta;
 }
+
 double get_external_clock(VideoState *is) {
-  return av_gettime() / 1000000.0;
+    return av_gettime() / 1000000.0;
 }
 
 double get_master_clock(VideoState *is) {
-  if(is->av_sync_type == AV_SYNC_VIDEO_MASTER) {
-    return get_video_clock(is);
-  } else if(is->av_sync_type == AV_SYNC_AUDIO_MASTER) {
-    return get_audio_clock(is);
-  } else {
-    return get_external_clock(is);
-  }
+    if(is->av_sync_type == AV_SYNC_VIDEO_MASTER) {
+        return get_video_clock(is);
+    } else if(is->av_sync_type == AV_SYNC_AUDIO_MASTER) {
+        return get_audio_clock(is);
+    } else {
+        return get_external_clock(is);
+    }
 }
 
 
@@ -708,8 +700,23 @@ double synchronize_video(VideoState *is, AVFrame *src_frame, double pts) {
 
 
     if(codecCtx->codec_type == AVMEDIA_TYPE_AUDIO) {
-
-        
+        // Set audio settings from codec info
+//        wanted_spec.freq = codecCtx->sample_rate;
+//        wanted_spec.format = AUDIO_S16SYS;
+//        wanted_spec.channels = 2;//codecCtx->channels;
+//        wanted_spec.silence = 0;
+//        wanted_spec.samples = SDL_AUDIO_BUFFER_SIZE;
+//        wanted_spec.callback = audio_callback;
+//        wanted_spec.userdata = is;
+//
+//        fprintf(stderr, "wanted spec: channels:%d, sample_fmt:%d, sample_rate:%d \n",
+//              2, AUDIO_S16SYS, codecCtx->sample_rate);
+//
+//        if(SDL_OpenAudio(&wanted_spec, &spec) < 0) {
+//            fprintf(stderr, "SDL_OpenAudio: %s\n", SDL_GetError());
+//            return -1;
+//        }
+//        is->audio_hw_buf_size = spec.size;
     }
 
     if(avcodec_open2(codecCtx, codec, NULL) < 0) {
@@ -728,6 +735,42 @@ double synchronize_video(VideoState *is, AVFrame *src_frame, double pts) {
       packet_queue_init(&is->audioq);
 
       //Out Audio Param
+        uint64_t out_channel_layout=AV_CH_LAYOUT_STEREO;
+
+        //AAC:1024  MP3:1152
+        int out_nb_samples= is->audio_ctx->frame_size;
+        //AVSampleFormat out_sample_fmt = AV_SAMPLE_FMT_S16;
+
+        int out_sample_rate=is->audio_ctx->sample_rate;
+        int out_channels=av_get_channel_layout_nb_channels(out_channel_layout);
+        //Out Buffer Size
+        /*
+        int out_buffer_size=av_samples_get_buffer_size(NULL,
+                                                       out_channels,
+                                                       out_nb_samples,
+                                                       AV_SAMPLE_FMT_S16,
+                                                       1);
+                                                       */
+
+        //uint8_t *out_buffer=(uint8_t *)av_malloc(MAX_AUDIO_FRAME_SIZE*2);
+        int64_t in_channel_layout=av_get_default_channel_layout(is->audio_ctx->channels);
+
+        struct SwrContext *audio_convert_ctx;
+        audio_convert_ctx = swr_alloc();
+        swr_alloc_set_opts(audio_convert_ctx,
+                           out_channel_layout,
+                           AV_SAMPLE_FMT_S16,
+                           out_sample_rate,
+                           in_channel_layout,
+                           is->audio_ctx->sample_fmt,
+                           is->audio_ctx->sample_rate,
+                           0,
+                           NULL);
+        fprintf(stderr, "swr opts: out_channel_layout:%lld, out_sample_fmt:%d, out_sample_rate:%d, in_channel_layout:%lld, in_sample_fmt:%d, in_sample_rate:%d",
+                out_channel_layout, AV_SAMPLE_FMT_S16, out_sample_rate, in_channel_layout, is->audio_ctx->sample_fmt, is->audio_ctx->sample_rate);
+        swr_init(audio_convert_ctx);
+
+        is->audio_swr_ctx = audio_convert_ctx;
       break;
     case AVMEDIA_TYPE_VIDEO:
       is->videoStream = stream_index;
@@ -779,6 +822,8 @@ double synchronize_video(VideoState *is, AVFrame *src_frame, double pts) {
     [self scheduleRefresh:40];
     
     is->av_sync_type = DEFAULT_AV_SYNC_TYPE;
+    
+    filePath = [[NSBundle mainBundle] pathForResource:@"audio543" ofType:@"mp3"];
     
     dispatch_queue_t queue = dispatch_queue_create("demux",DISPATCH_QUEUE_SERIAL);
     dispatch_async(queue, ^{

@@ -150,7 +150,7 @@
 //    GPUImageTransformFilter *addtrans = [[GPUImageTransformFilter alloc] init];
     // 左右最大为2 -2
     // 上下最大为3 -3
-//    addtrans.affineTransform = CGAffineTransformMakeTranslation(0.0, 3.0);
+//    addtrans.affineTransform = CGAffineTransformMakeTranslation(1.5, 0.0);
 //    [self.pipeline addFilter:addtrans];
     
     return transForm;
