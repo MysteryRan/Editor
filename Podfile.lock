@@ -1,32 +1,35 @@
 PODS:
   - GPUImage (0.1.7)
-  - LookinServer (1.0.6)
+  - IJKMediaFramework (0.8.9)
+  - libyuv-iOS (1.0.2)
   - Masonry (1.1.0)
   - MBProgressHUD (1.2.0)
-  - YYModel (1.0.4)
 
 DEPENDENCIES:
   - GPUImage
-  - LookinServer
+  - IJKMediaFramework (from `https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json`)
+  - libyuv-iOS (~> 1.0.2)
   - Masonry
   - MBProgressHUD
-  - YYModel
 
 SPEC REPOS:
   trunk:
     - GPUImage
-    - LookinServer
+    - libyuv-iOS
     - Masonry
     - MBProgressHUD
-    - YYModel
+
+EXTERNAL SOURCES:
+  IJKMediaFramework:
+    :podspec: https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json
 
 SPEC CHECKSUMS:
   GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
-  LookinServer: 18155b1e4a08213c236a1dd6b7ca52328a70a1e3
+  IJKMediaFramework: aa80bbca8d5443171b2c4d5cc025cc013b2172e3
+  libyuv-iOS: 5a154ccc84ec754029886ecb607512731fe30640
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
-  YYModel: 2a7fdd96aaa4b86a824e26d0c517de8928c04b30
 
-PODFILE CHECKSUM: 6f4bb7f3ecca3637f80367d3ba4defbc4551921c
+PODFILE CHECKSUM: c159cd4060911ea946cae5623f76bbdb1abfc53d
 
-COCOAPODS: 1.10.1
+COCOAPODS: 1.16.2

@@ -8,8 +8,10 @@ target 'Editor' do
   # Pods for Editor
   pod "GPUImage"
   pod "Masonry"
-  pod "YYModel"
   pod 'MBProgressHUD'
-  pod 'LookinServer', :configurations => ['Debug']
+  pod "IJKMediaFramework", :podspec => 'https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json'
+  pod 'libyuv-iOS', '~> 1.0.2'
+
+
 
 end

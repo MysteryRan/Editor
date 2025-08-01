@@ -1,10 +1,12 @@
 CLANG_MODULES_AUTOLINK = YES
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/GPUImage" "${PODS_CONFIGURATION_BUILD_DIR}/LookinServer" "${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD" "${PODS_CONFIGURATION_BUILD_DIR}/Masonry" "${PODS_CONFIGURATION_BUILD_DIR}/YYModel"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/GPUImage" "${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD" "${PODS_CONFIGURATION_BUILD_DIR}/Masonry" "${PODS_ROOT}/IJKMediaFramework" "${PODS_XCFRAMEWORKS_BUILD_DIR}/IJKMediaFramework"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/GPUImage/GPUImage.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/LookinServer/LookinServer.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD/MBProgressHUD.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/Masonry/Masonry.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/YYModel/YYModel.framework/Headers"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_CONFIGURATION_BUILD_DIR}/GPUImage/GPUImage.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD/MBProgressHUD.framework/Headers" "${PODS_CONFIGURATION_BUILD_DIR}/Masonry/Masonry.framework/Headers" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/libyuv-iOS"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) '@executable_path/Frameworks' '@loader_path/Frameworks'
-OTHER_LDFLAGS = $(inherited) -framework "AVFoundation" -framework "CoreFoundation" -framework "CoreGraphics" -framework "CoreMedia" -framework "Foundation" -framework "GPUImage" -framework "LookinServer" -framework "MBProgressHUD" -framework "Masonry" -framework "OpenGLES" -framework "QuartzCore" -framework "UIKit" -framework "YYModel"
+LIBRARY_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/libyuv-iOS/lib"
+OTHER_LDFLAGS = $(inherited) -ObjC -l"bz2" -l"c++" -l"iconv" -l"lzma" -l"xml2" -l"yuv" -l"z" -framework "AVFoundation" -framework "AudioToolbox" -framework "CoreGraphics" -framework "CoreMedia" -framework "CoreVideo" -framework "Foundation" -framework "GPUImage" -framework "IJKMediaFramework" -framework "MBProgressHUD" -framework "Masonry" -framework "Metal" -framework "OpenGLES" -framework "QuartzCore" -framework "UIKit" -framework "VideoToolbox"
+OTHER_MODULE_VERIFIER_FLAGS = $(inherited) "-F${PODS_CONFIGURATION_BUILD_DIR}/GPUImage" "-F${PODS_CONFIGURATION_BUILD_DIR}/IJKMediaFramework" "-F${PODS_CONFIGURATION_BUILD_DIR}/MBProgressHUD" "-F${PODS_CONFIGURATION_BUILD_DIR}/Masonry" "-F${PODS_CONFIGURATION_BUILD_DIR}/libyuv-iOS"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/.
