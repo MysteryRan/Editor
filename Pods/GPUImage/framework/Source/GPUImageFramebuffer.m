@@ -58,8 +58,6 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
     {
         [self generateFramebuffer];
     }
-//        NSLog(@"创建一个 OpenGL frameBuffer %d",framebuffer);
-
     return self;
 }
 
@@ -110,7 +108,6 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
 - (void)dealloc
 {
-//    NSLog(@"销毁一个 OpenGL frameBuffer %d",framebuffer);
     [self destroyFramebuffer];
 }
 
@@ -245,7 +242,6 @@ void dataProviderUnlockCallback (void *info, const void *data, size_t size);
 
 - (void)activateFramebuffer;
 {
-//    NSLog(@"%u----%f-----%f",framebuffer,_size.width,_size.height);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
     glViewport(0, 0, (int)_size.width, (int)_size.height);
 }

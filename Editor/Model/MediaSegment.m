@@ -13,13 +13,13 @@
 - (EditorVideo *)segmentFindVideo {
     
     EditorData *editorData = [EditorData sharedInstance];
-    for (EditorVideo *video in editorData.materials.videos) {
-        if ([self.material_id isEqualToString:video.media_id]) {
-            return video;
-        }
-    }
+//    for (EditorVideo *video in editorData.materials.videos) {
+//        if ([self.material_id isEqualToString:video.media_id]) {
+//            return video;
+//        }
+//    }
     EditorVideo *emptyVideo = [EditorVideo new];
-    emptyVideo.path = [[NSBundle mainBundle] pathForResource:@"ii" ofType:@"MP4"];
+    emptyVideo.path = [[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"];
     emptyVideo.width = 100;
     emptyVideo.height = 100;
     return emptyVideo;

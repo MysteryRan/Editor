@@ -12,7 +12,6 @@
 #import "UICollectionView+Extensions.h"
 #import "EditorData.h"
 #import "MediaInfo.h"
-#import "FFMpegTool.h"
 #import "EditorMaterial.h"
 #import "ViewController.h"
 #import "EditorVideoEffect.h"
@@ -277,50 +276,50 @@ static NSString *CollectionCellIdentifier = @"cell";
             
             NSLog(@"%@",u);
             
-            if ([FFMpegTool exportAblumPhoto:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
-                MediaInfo *info = [FFMpegTool openStreamFunc:u];
-                NSString *videoPath = u;
-                EditorVideo *video = [[EditorVideo alloc] init];
-                video.path = videoPath;
-                video.width = info.width;
-                video.height = info.height;
-//                video.width = 1080;
-//                video.height = 1620;
-                video.media_id = [NSString media_GUIDString];
-                
-                EditorTransition *transition = [[EditorTransition alloc] init];
-                transition.type = @"transition";
-                transition.duration = 2000000;
-                transition.path = [[NSBundle mainBundle] pathForResource:@"Heart" ofType:@"fsh"];
-                
-                MediaSegment *segment = [[MediaSegment alloc] init];
-                MediaClip *clip = [[MediaClip alloc] init];
-                segment.clip = clip;
-                segment.source_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:info.duration];
-                segment.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:start timeRangeDuration:segment.source_timerange.duration];
-                if (i == 0) {
-                    CanvasConfig *config = [[CanvasConfig alloc] init];
-                    config.width = video.width;
-                    config.height = video.height;
-                    config.ratio = CanvasRatioOriginal;
-                    editorData.canvas_config = config;
-                }
-                
-                clip.scale = [self setNormalTransformWithVideoSize:CGSizeMake(video.width, video.height)];
-                segment.material_id = video.media_id;
-                if (i < materials.transitions.count && materials.transitions.count > 0) {
-                    transition = materials.transitions[i];
-                }
-                if (transition) {
-                    start += (info.duration - transition.duration);
-                } else {
-                    start += info.duration;
-                }
-                
-                [materials.transitions addObject:transition];
-                [materials.videos addObject:video];
-                [mainTrack.segments addObject:segment];
-            }
+//            if ([FFMpegTool exportAblumPhoto:[ass.URL.absoluteString UTF8String] toPath:[u UTF8String]] == 0) {
+//                MediaInfo *info = [FFMpegTool openStreamFunc:u];
+//                NSString *videoPath = u;
+//                EditorVideo *video = [[EditorVideo alloc] init];
+//                video.path = videoPath;
+//                video.width = info.width;
+//                video.height = info.height;
+////                video.width = 1080;
+////                video.height = 1620;
+//                video.media_id = [NSString media_GUIDString];
+//                
+//                EditorTransition *transition = [[EditorTransition alloc] init];
+//                transition.type = @"transition";
+//                transition.duration = 2000000;
+//                transition.path = [[NSBundle mainBundle] pathForResource:@"Heart" ofType:@"fsh"];
+//                
+//                MediaSegment *segment = [[MediaSegment alloc] init];
+//                MediaClip *clip = [[MediaClip alloc] init];
+//                segment.clip = clip;
+//                segment.source_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:info.duration];
+//                segment.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:start timeRangeDuration:segment.source_timerange.duration];
+//                if (i == 0) {
+//                    CanvasConfig *config = [[CanvasConfig alloc] init];
+//                    config.width = video.width;
+//                    config.height = video.height;
+//                    config.ratio = CanvasRatioOriginal;
+//                    editorData.canvas_config = config;
+//                }
+//                
+//                clip.scale = [self setNormalTransformWithVideoSize:CGSizeMake(video.width, video.height)];
+//                segment.material_id = video.media_id;
+//                if (i < materials.transitions.count && materials.transitions.count > 0) {
+//                    transition = materials.transitions[i];
+//                }
+//                if (transition) {
+//                    start += (info.duration - transition.duration);
+//                } else {
+//                    start += info.duration;
+//                }
+//                
+//                [materials.transitions addObject:transition];
+//                [materials.videos addObject:video];
+//                [mainTrack.segments addObject:segment];
+//            }
              
             dispatch_group_leave(group);
         }];

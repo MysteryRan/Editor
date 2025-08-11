@@ -7,7 +7,6 @@
 
 #import "EditorMovieEncoder.h"
 #import <Photos/Photos.h>
-#import "FFMpegTool.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -32,7 +31,19 @@ extern "C" {
     FILE *f;
     
     AVPacket *pkt;
+    
+    
+    AVCodecContext *codec_ctx;
+    AVFormatContext *fmt_ctx;
+    AVStream *video_stream;
+    int frame_count;
 }
+
+@property (nonatomic, strong) NSURL *outputURL;
+@property (nonatomic) int width;
+@property (nonatomic) int height;
+@property (nonatomic) int fps;
+@property (nonatomic) FILE *outputFile;
 
 @end
 
@@ -243,7 +254,7 @@ static void encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt,
     
     NSString *finalPath = [[[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"Video"] stringByAppendingPathComponent:@"final.mp4"];
     
-    [FFMpegTool replaceAudio:audioPath videoFile:writablePath];
+//    [FFMpegTool replaceAudio:audioPath videoFile:writablePath];
     
     if ( [PHAssetCreationRequest class] ) {
         [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
@@ -276,5 +287,155 @@ static void encode(AVCodecContext *enc_ctx, AVFrame *frame, AVPacket *pkt,
     hud.label.text = @"成功保存视频到相册";
     [hud hideAnimated:YES afterDelay:3];
 }
+
+- (instancetype)initWithOutputURL:(NSURL *)outputURL
+                            width:(int)width
+                           height:(int)height
+                              fps:(int)fps {
+    if (self = [super init]) {
+        _outputURL = outputURL;
+        _width = width;
+        _height = height;
+        _fps = fps;
+        frame_count = 0;
+        
+        if (![self setupFFmpegEncoder]) {
+            return nil;
+        }
+    }
+    return self;
+}
+
+- (BOOL)setupFFmpegEncoder {
+    // 1. 初始化FFmpeg
+    avformat_network_init();
+    
+    // 2. 创建输出上下文 (MP4容器)
+    avformat_alloc_output_context2(&fmt_ctx, NULL, "mp4", _outputURL.path.UTF8String);
+    if (!fmt_ctx) {
+        NSLog(@"Failed to create output context");
+        return NO;
+    }
+    
+    // 3. 查找硬件编码器 (NVENC)
+    const AVCodec *codec = avcodec_find_encoder_by_name("h264_nvenc");
+    if (!codec) {
+        NSLog(@"NVENC encoder not found");
+        return NO;
+    }
+    
+    // 4. 创建编码器上下文
+    codec_ctx = avcodec_alloc_context3(codec);
+    codec_ctx->width = 720;
+    codec_ctx->height = 720;
+    codec_ctx->time_base = (AVRational){1, 600};
+    codec_ctx->framerate = (AVRational){30, 1};
+    codec_ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+    codec_ctx->gop_size = 60; // GOP大小
+    codec_ctx->max_b_frames = 0; // B帧数
+    codec_ctx->bit_rate = 4000000; // 4Mbps
+    
+    // 5. 创建CUDA硬件设备上下文
+    AVBufferRef *hw_device_ctx = NULL;
+    int ret = av_hwdevice_ctx_create(&hw_device_ctx, AV_HWDEVICE_TYPE_VIDEOTOOLBOX, NULL, NULL, 0);
+    if (ret < 0) {
+        NSLog(@"Failed to create CUDA device context: %s", av_err2str(ret));
+        return NO;
+    }
+    codec_ctx->hw_device_ctx = av_buffer_ref(hw_device_ctx);
+    
+    // 6. 打开编码器
+    ret = avcodec_open2(codec_ctx, codec, NULL);
+    if (ret < 0) {
+        NSLog(@"Failed to open codec: %s", av_err2str(ret));
+        return NO;
+    }
+    
+    // 7. 创建视频流
+    video_stream = avformat_new_stream(fmt_ctx, codec);
+    video_stream->time_base = codec_ctx->time_base;
+    avcodec_parameters_from_context(video_stream->codecpar, codec_ctx);
+    
+    // 8. 打开输出文件
+    ret = avio_open(&fmt_ctx->pb, _outputURL.path.UTF8String, AVIO_FLAG_WRITE);
+    if (ret < 0) {
+        NSLog(@"Failed to open output file: %s", av_err2str(ret));
+        return NO;
+    }
+    
+    // 9. 写入文件头
+    ret = avformat_write_header(fmt_ctx, NULL);
+    if (ret < 0) {
+        NSLog(@"Failed to write header: %s", av_err2str(ret));
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (void)encodePixelBuffer:(CVPixelBufferRef)pixelBuffer {
+    // 1. 创建硬件帧
+    AVFrame *frame = av_frame_alloc();
+    frame->width = _width;
+    frame->height = _height;
+    frame->format = AV_PIX_FMT_CUDA;
+    
+    // 2. 从CVPixelBuffer创建CUDA帧
+    CVReturn ret = CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+    if (ret != kCVReturnSuccess) {
+        NSLog(@"Failed to lock pixel buffer");
+        return;
+    }
+    
+    // 3. 创建CUDA帧（实际实现需要更复杂的CUDA内存映射）
+    // 这里简化处理：实际应用中应使用CUDA图形API直接映射OpenGL纹理
+    av_hwframe_get_buffer(codec_ctx->hw_frames_ctx, frame, 0);
+    
+    // 4. 设置帧属性
+    frame->pts = av_rescale_q(frame_count, codec_ctx->time_base, video_stream->time_base);
+    frame_count++;
+    
+    // 5. 发送帧到编码器
+    int send_ret = avcodec_send_frame(codec_ctx, frame);
+    if (send_ret < 0) {
+        NSLog(@"Error sending frame: %s", av_err2str(send_ret));
+    }
+    
+    // 6. 接收编码后的包
+    AVPacket *pkt = av_packet_alloc();
+    while (avcodec_receive_packet(codec_ctx, pkt) == 0) {
+        pkt->stream_index = video_stream->index;
+        av_packet_rescale_ts(pkt, codec_ctx->time_base, video_stream->time_base);
+        av_interleaved_write_frame(fmt_ctx, pkt);
+        av_packet_unref(pkt);
+    }
+    
+    // 7. 清理
+    av_frame_free(&frame);
+    av_packet_free(&pkt);
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+}
+
+- (void)finishEncoding {
+    // 发送空帧冲刷编码器
+    avcodec_send_frame(codec_ctx, NULL);
+    
+    AVPacket *pkt = av_packet_alloc();
+    while (avcodec_receive_packet(codec_ctx, pkt) == 0) {
+        pkt->stream_index = video_stream->index;
+        av_packet_rescale_ts(pkt, codec_ctx->time_base, video_stream->time_base);
+        av_interleaved_write_frame(fmt_ctx, pkt);
+        av_packet_unref(pkt);
+    }
+    
+    // 写入文件尾
+    av_write_trailer(fmt_ctx);
+    
+    // 释放资源
+    avcodec_free_context(&codec_ctx);
+    avio_closep(&fmt_ctx->pb);
+    avformat_free_context(fmt_ctx);
+}
+
 
 @end

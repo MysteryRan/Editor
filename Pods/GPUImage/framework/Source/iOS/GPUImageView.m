@@ -232,19 +232,12 @@
     runSynchronouslyOnVideoProcessingQueue(^{
         CGFloat heightScaling, widthScaling;
         
-        __block CGSize currentViewSize;
-        __block CGRect insetRect;
-        dispatch_async(dispatch_get_main_queue(), ^{
-            currentViewSize = self.bounds.size;
-            insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize, self.bounds);
-                });
-
-         
+        CGSize currentViewSize = self.bounds.size;
         
         //    CGFloat imageAspectRatio = inputImageSize.width / inputImageSize.height;
         //    CGFloat viewAspectRatio = currentViewSize.width / currentViewSize.height;
         
-        
+        CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize, self.bounds);
         
         switch(_fillMode)
         {

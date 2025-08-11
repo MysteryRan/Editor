@@ -19,6 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)teardown;
 
+- (instancetype)initWithOutputURL:(NSURL *)outputURL
+                            width:(int)width
+                           height:(int)height
+                              fps:(int)fps;
+
+- (void)encodePixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (void)finishEncoding;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -261,8 +261,4 @@ NSString *const kGPUImageTwoInputTextureVertexShaderString = SHADER_STRING
     }
 }
 
-- (void)dealloc {
-    
-}
-
 @end

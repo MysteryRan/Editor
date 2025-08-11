@@ -2,4 +2,11 @@ ${PODS_ROOT}/Target Support Files/Pods-Editor/Pods-Editor-frameworks.sh
 ${BUILT_PRODUCTS_DIR}/GPUImage/GPUImage.framework
 ${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework
 ${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework
-${PODS_XCFRAMEWORKS_BUILD_DIR}/IJKMediaFramework/IJKMediaFramework.framework/IJKMediaFramework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/ffmpegkit.framework/ffmpegkit
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libavcodec.framework/libavcodec
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libavdevice.framework/libavdevice
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libavfilter.framework/libavfilter
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libavformat.framework/libavformat
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libavutil.framework/libavutil
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libswresample.framework/libswresample
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg_kit/Core/libswscale.framework/libswscale

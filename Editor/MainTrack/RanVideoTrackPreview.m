@@ -7,15 +7,10 @@
 
 #import "RanVideoTrackPreview.h"
 #import "Masonry.h"
-#import "RanVideoSegmentView.h"
 
-@interface RanVideoTrackPreview()<VideoSegmentViewDelegate>
+@interface RanVideoTrackPreview()
 
 @property (nonatomic, assign) CGFloat timeRule;
-@property (nonatomic, strong) MASConstraint *widthContraint;
-@property (nonatomic, strong) MASConstraint *leftContraint;
-@property (nonatomic, strong) RanVideoSegmentView *selectedSegmentView;
-@property (nonatomic, strong) RanVideoSegmentView *firstSegmentView;
 
 @end
 

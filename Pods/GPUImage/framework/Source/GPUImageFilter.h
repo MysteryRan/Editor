@@ -92,7 +92,6 @@ typedef struct GPUMatrix3x3 GPUMatrix3x3;
  @param fragmentShaderFilename Filename of fragment shader to load
  */
 - (id)initWithFragmentShaderFromFile:(NSString *)fragmentShaderFilename;
-- (id)initWithFragmentShaderFromFilePath:(NSString *)fragmentShaderFilePath;
 - (void)initializeAttributes;
 - (void)setupFilterForSize:(CGSize)filterFrameSize;
 - (CGSize)rotatedSize:(CGSize)sizeToRotate forIndex:(NSInteger)textureIndex;

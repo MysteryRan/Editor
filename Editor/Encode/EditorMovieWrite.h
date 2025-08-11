@@ -9,13 +9,26 @@
 #import "GPUImage.h"
 
 NS_ASSUME_NONNULL_BEGIN
+extern NSString *const kGPUImageColorSwizzlingFragmentShaderString;
 
-@interface EditorMovieWrite : NSObject<GPUImageInput>
+@protocol GPUImageMovieWriterDelegate <NSObject>
+
+@optional
+- (void)movieRecordingCompleted;
+- (void)movieRecordingFailedWithError:(NSError*)error;
+
+@end
+
+@interface EditorMovieWrite : NSObject <GPUImageInput>
 {
     BOOL alreadyFinishedRecording;
     
     NSURL *movieURL;
     NSString *fileType;
+    AVAssetWriter *assetWriter;
+    AVAssetWriterInput *assetWriterAudioInput;
+    AVAssetWriterInput *assetWriterVideoInput;
+    AVAssetWriterInputPixelBufferAdaptor *assetWriterPixelBufferInput;
     
     GPUImageContext *_movieWriterContext;
     CVPixelBufferRef renderTarget;
@@ -36,6 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) BOOL(^audioInputReadyCallback)(void);
 @property(nonatomic, copy) void(^audioProcessingCallback)(SInt16 **samplesRef, CMItemCount numSamplesInBuffer);
 @property(nonatomic) BOOL enabled;
+@property(nonatomic, readonly) AVAssetWriter *assetWriter;
 @property(nonatomic, readonly) CMTime duration;
 @property(nonatomic, assign) CGAffineTransform transform;
 @property(nonatomic, copy) NSArray *metaData;

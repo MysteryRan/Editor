@@ -118,18 +118,7 @@ NSString *const kGPUImagePassthroughFragmentShaderString = SHADER_STRING
     return self;
 }
 
-- (id)initWithFragmentShaderFromFilePath:(NSString *)fragmentShaderFilePath {
-    NSString *fragmentShaderString = [NSString stringWithContentsOfFile:fragmentShaderFilePath encoding:NSUTF8StringEncoding error:nil];
-
-    if (!(self = [self initWithFragmentShaderFromString:fragmentShaderString]))
-    {
-        return nil;
-    }
-    
-    return self;
-}
-
-- (id)initWithFragmentShaderFromFile:(NSString *)fragmentShaderFilename
+- (id)initWithFragmentShaderFromFile:(NSString *)fragmentShaderFilename;
 {
     NSString *fragmentShaderPathname = [[NSBundle mainBundle] pathForResource:fragmentShaderFilename ofType:@"fsh"];
     NSString *fragmentShaderString = [NSString stringWithContentsOfFile:fragmentShaderPathname encoding:NSUTF8StringEncoding error:nil];

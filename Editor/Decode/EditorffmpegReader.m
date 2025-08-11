@@ -8,7 +8,6 @@
 #import "EditorffmpegReader.h"
 #import "EditorData.h"
 #import "EditorFFmpegDecode.h"
-#import "LCPlayer.h"
 #import "GPUImagePicture+TextureSubimage.h"
 
 @interface EditorffmpegReader()<EditorFFmpegDecodeDelegate> {
@@ -39,7 +38,6 @@
 
 @property (nonatomic, strong) GPUImageFilterPipeline *pipeline;
 @property (nonatomic, strong) NSMutableArray *filters;
-@property (nonatomic, strong)LCPlayer *lcplayer;
 
 @property (nonatomic, strong) GPUImagePicture *picc;
 @property (nonatomic, strong) NSMutableDictionary *effectsDic;
@@ -57,25 +55,7 @@
 }
 
 - (void)stop {
-    [self.lcplayer stop];
-}
-
-- (GPUImageFilter *)startWith:(MediaSegment *)segment {
-    [self yuvConversionSetup];
-    EditorVideo *video = [segment segmentFindVideo];
-    NSLog(@"width-height---%lld---%lld",video.width,video.height);
-    GPUImageFilter *filter = [self setNormalTransform:self withVideoSize:CGSizeMake(video.width, video.height)];
-//    self.ffmpegDecode = [[EditorFFmpegDecode alloc] init];
-//    self.ffmpegDecode.delegate = self;
-//    [self.ffmpegDecode appendClip:video.path trimIn:segment.source_timerange.start trimOut:segment.source_timerange.start + segment.source_timerange.duration];
     
-    self.lcplayer = [[LCPlayer alloc] init];
-    self.lcplayer.delegate = self;
-//    [self.lcplayer maintest];
-    [self.lcplayer appendClip:video.path trimIn:segment.source_timerange.start trimOut:segment.source_timerange.start + segment.source_timerange.duration];
-    
-    self.effectsDic = [NSMutableDictionary dictionaryWithCapacity:0];
-    return filter;
 }
 
 - (void)reveiveFrameToRenderer:(CVPixelBufferRef)img {

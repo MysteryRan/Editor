@@ -6,7 +6,6 @@
 //
 
 #import "EditorData.h"
-#import "NSObject+YYModel.h"
 
 static EditorData *sharedInstance = nil;
 static dispatch_once_t onceToken;
@@ -30,11 +29,6 @@ static dispatch_once_t onceToken;
         self.materials = [[EditorMaterial alloc] init];
     }
     return self;
-}
-
-+ (NSDictionary *)modelContainerPropertyGenericClass {
-    return @{@"tracks": [MediaTrack class],
-    };
 }
 
 @end

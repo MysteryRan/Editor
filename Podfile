@@ -9,7 +9,7 @@ target 'Editor' do
   pod "GPUImage"
   pod "Masonry"
   pod 'MBProgressHUD'
-  pod "IJKMediaFramework", :podspec => 'https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json'
+  pod "ffmpeg_kit", :git => "https://github.com/snice/ffmpeg_kit.git"
   pod 'libyuv-iOS', '~> 1.0.2'
 
 

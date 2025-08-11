@@ -17,25 +17,26 @@
 #import "EditorffmpegReader.h"
 #import "MediaTimeRange.h"
 #import "EditorTransition.h"
-#import "FFMpegTool.h"
 #import "NSString+RanAdditions.h"
 #import "MR0x31FFMpegMovie.h"
 #import "EditorSticker.h"
 
 #import "EditorAudioPlayer.h"
-#import "FFPlayPlayer.h"
 #import "EditorMovieWrite.h"
 
-#import "LCPlayer.h"
 #import "MutilpleTrackContentView.h"
 #import "MediaBottomActionView.h"
 #import "GuidelineView.h"
+#import "Model/EditorTimeline.h"
+#import "VITimelineView+Creator.h"
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libavutil/pixdesc.h>
+#import "EditorFFmpegDecode.h"
+#import "Model/GPUImageTwoInputTransitonFilter.h"
 
-@interface ViewController ()<EditorffmpegReaderDelegate,MR0x31FFMpegMovieDelegate,MediaBottomActionViewDelegate> {
-    
-    dispatch_source_t video_render_timer;
-    dispatch_queue_t video_render_dispatch_queue;
-}
+
+@interface ViewController ()<EditorffmpegReaderDelegate,MR0x31FFMpegMovieDelegate,MediaBottomActionViewDelegate,VIRangeViewDelegate, VITimelineViewDelegate,EditorFFmpegDecodeDelegate>
 
 @property(nonatomic, strong) UIView *preBackgroundView;
 @property(nonatomic, strong) UIView *editorControlBar;
@@ -55,7 +56,6 @@
 
 @property (nonatomic, strong) GPUImageFilter *pipFilter;
 
-@property (nonatomic, strong) GPUImageTwoInputFilter *transitionFilter;
 
 
 @property (nonatomic, strong) MR0x31FFMpegMovie *firstMovie;
@@ -72,16 +72,11 @@
 @property (nonatomic, strong) EditorAudioPlayer *audioPlayer;
 @property (nonatomic, strong) GPUImageFilterPipeline *pipeLine;
 
-@property (nonatomic, strong) RanMediaTimeline *timelineView;
+@property (nonatomic, strong) VITimelineView *timelineView;
 
 @property (nonatomic, assign) CGFloat contentOffset;
 
-
-@property (nonatomic, strong) FFPlayPlayer *ffplayer;
-
 @property (nonatomic, strong) EditorMovieWrite *movieWrite;
-
-@property (nonatomic, strong) LCPlayer *llplayer;
 
 @property (nonatomic, strong) EditorffmpegReader *pipReader;
 @property (nonatomic, strong) MutilpleTrackContentView *trackContentView;
@@ -91,6 +86,16 @@
 @property (nonatomic, assign) uint64_t totalSecond;
 @property (nonatomic, strong) UILabel *currentTimeLab;
 
+
+@property (nonatomic, strong) EditorTimeline *editorTimeline;
+@property (nonatomic, strong) EditorFFmpegDecode *deocde;
+@property (nonatomic, strong) NSMutableArray *ddee;
+@property (nonatomic, strong) GPUImageTwoInputTransitonFilter *transitionFilter;
+
+
+@property (nonatomic, strong) NSMutableArray *transformFilters;
+
+
 @end
 
 @implementation ViewController
@@ -99,49 +104,61 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
-//    self.audioPlayer = [[EditorAudioPlayer alloc] init];
-//    [self.audioPlayer play];
-//    [FFMpegTool copytest];
-//    return;
+    self.ddee = [NSMutableArray arrayWithCapacity:0];
+    self.transformFilters = [NSMutableArray arrayWithCapacity:0];
     
     [self setupPreView];
     [self setupPlaycontrol];
     [self setupMainTrack];
     [self setupResource];
-    [self setupTimer];
+    
+    VideoTrack *track = [[VideoTrack alloc] init];
+    track.decodeDelegate = self;
+    
+    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"];
+    NSString *filePath2 = [[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"];
+
+    EditorFFmpegDecode *deo = [track appendClip:filePath trimIn:0 trimOut:5000000];
+    EditorFFmpegDecode *deo2 = [track appendClip:filePath2 trimIn:0 trimOut:5000000];
+    
+    GPUImageTransformFilter *aspectFilter = [[GPUImageTransformFilter alloc] init];
+    aspectFilter.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:filePath] outputSize:CGSizeMake(720, 720)];
+    
+    GPUImageTransformFilter *aspectFilter2 = [[GPUImageTransformFilter alloc] init];
+    aspectFilter2.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:filePath2] outputSize:CGSizeMake(720, 720)];
+
+    [deo addTarget:aspectFilter];
+    [deo2 addTarget:aspectFilter2];
+    
+//    [aspectFilter addTarget:self.gpuPreView];
+//    [aspectFilter addTarget:self.originMoviewrite];
+//    [self.originMoviewrite startRecording];
+    
+//    GPUImageFilter *finalFilter = [[GPUImageFilter alloc] init];
+    
+//    GPUImageFilterPipeline *pee = [[GPUImageFilterPipeline alloc] initWithOrderedFilters:@[aspectFilter] input:deo output:finalFilter];
+//    [finalFilter addTarget:self.gpuPreView];
+//    pee.output = self.originMoviewrite;
+
+    [self.ddee addObject:track];
+    [self.ddee addObject:deo];
+    [self.ddee addObject:deo2];
+    
+    [self.transformFilters addObject:aspectFilter];
+    [self.transformFilters addObject:aspectFilter2];
+    
+    //转场原理
+    /*
+     切换fliter 单个 多个之间切换
+     */
+    self.transitionFilter = [[GPUImageTwoInputTransitonFilter alloc] initWithFragmentShaderFromFile:@"Heart"];
+    [aspectFilter addTarget:self.gpuPreView];
+    [deo beginDecode];
 }
 
 - (void)mutilAudio {
     self.audioPlayer = [[EditorAudioPlayer alloc] init];
     [self.audioPlayer play];
-}
-
-- (void)setupTimer {
-    double fps = 30.0;
-    uint64_t av_time_base = 1000000;
-    __block float time = 0;
-    if(self->video_render_timer) {
-        dispatch_source_cancel(self->video_render_timer);
-    }
-    self->video_render_dispatch_queue = dispatch_queue_create("render queue", DISPATCH_QUEUE_CONCURRENT);
-    self->video_render_timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, video_render_dispatch_queue);
-    float duration = 1.0 / fps * av_time_base;
-    dispatch_source_set_timer(self->video_render_timer, DISPATCH_TIME_NOW, (1.0 / fps) * NSEC_PER_SEC, 0);
-    dispatch_source_set_event_handler(self->video_render_timer, ^{
-        if (time == 0) {
-            self.ffmpegReader = [[EditorffmpegReader alloc] init];
-            self.ffmpegReader.resourceTimeRange = [self.firstSegment getAVFoundationTargetTimeRange];
-            self.currentFilter = [self.ffmpegReader startWith:self.firstSegment];
-            [self.currentFilter addTarget:self.gpuPreView];
-            self.movieWrite = [[EditorMovieWrite alloc] initWithMovieURL:[NSURL URLWithString:@""] size:CGSizeMake(1920, 1080)];
-                [self.currentFilter addTarget:self.movieWrite];
-                [self.movieWrite startRecording];
-        }
-        uint64_t current_time = round(time);
-        [self trackControlWithTime:current_time];
-        [self effectsControlWithTime:current_time];
-        time = time + duration;
-    });
 }
 
 - (void)effectsControlWithTime:(uint64_t)time {
@@ -184,86 +201,6 @@
     }
 }
 
-- (void)trackControlWithTime:(uint64_t)time {
-//    NSLog(@"timer pts %lld",time);
-    double fps = 30.0;
-    uint64_t av_time_base = 1000000;
-    float perFrame = 1.0 / fps * av_time_base;
-    
-    if (time > self.totalSecond) {
-        dispatch_suspend(self->video_render_timer);
-        [self.movieWrite finishRecording];
-        return;
-    }
-    
-    // 每秒长度 / 总长度 = 每秒时间 / 总时间
-    dispatch_async(dispatch_get_main_queue(), ^{
-        double offsetX = 0;
-        CGFloat f_time = (CGFloat)time;
-        CGFloat f_totalSecond = (CGFloat)self.totalSecond;
-        CGFloat progress = (CGFloat)(f_time / f_totalSecond);
-        offsetX = progress * (self.timelineView.contentSize.width - self.view.frame.size.width);
-        [self.timelineView setContentOffset:CGPointMake(offsetX, 0)];
-        self.currentTimeLab.text = [self convertSecondsTimecode:time];
-    });
-    
-    NSUInteger index = [self.editorData.tracks[0].segments indexOfObject:self.firstSegment];
-    NSMutableArray *transtions = self.editorData.materials.transitions;
-    int64_t tran_duration = 0;
-    EditorTransition *transi;
-    if (index >= 0 && index < transtions.count) {
-        transi = self.editorData.materials.transitions[index];
-        tran_duration = transi.duration;
-    }
-    
-    if (!self.secondSegment) {
-        return;
-    }
-    
-    uint64_t distance = time - (self.secondSegment.target_timerange.start);
-    
-    // 刚转场
-    if (distance <= perFrame && distance > 0) {
-        // 前一个
-        [self.currentFilter removeAllTargets];
-        // 开始解码下一个了
-        // 后一个
-        self.secondReader = [[EditorffmpegReader alloc] init];
-        self.nextFilter = [self.secondReader startWith:self.secondSegment];
-        // 有转场
-        if (tran_duration > 0) {
-            //初始化转场
-            self.transitionFilter = [[GPUImageTwoInputFilter alloc] initWithFragmentShaderFromFilePath:transi.path];
-            [self.currentFilter addTarget:self.transitionFilter];
-            [self.nextFilter addTarget:self.transitionFilter];
-            
-            [self.transitionFilter addTarget:self.gpuPreView];
-            [self.transitionFilter addTarget:self.movieWrite];
-        } else {
-            [self.nextFilter addTarget:self.gpuPreView];
-            [self.nextFilter addTarget:self.movieWrite];
-        }
-    }
-    // 转场中
-    if (tran_duration > 0) {
-        if (time >= self.secondSegment.target_timerange.start && time <= self.secondSegment.target_timerange.start + tran_duration) {
-            uint64_t dur_time = (time - self.secondSegment.target_timerange.start);
-            double percent = dur_time / (tran_duration * 1.0);
-            [self.transitionFilter setFloat:percent forUniformName:@"maintime"];
-        }
-        
-        // 转场后
-        distance = time - (self.secondSegment.target_timerange.start + tran_duration);
-        if (distance <= perFrame && distance > 0) {
-            [self.currentFilter removeAllTargets];
-            [self.nextFilter removeAllTargets];
-            [self.transitionFilter removeAllTargets];
-            [self.nextFilter addTarget:self.gpuPreView];
-            [self.nextFilter addTarget:self.movieWrite];
-        }
-    }
-}
-
 - (void)setupPreView {
     self.preBackgroundView = [UIView new];
     self.preBackgroundView.backgroundColor = [UIColor colorWithRed:24/255.0 green:24/255.0 blue:24/255.0 alpha:1];
@@ -276,11 +213,12 @@
     }];
     
     self.editorData = [EditorData sharedInstance];
-    CanvasConfig *config = self.editorData.canvas_config;
+    CanvasConfig *config = [CanvasConfig new];
+    config.width = 720;
+    config.height = 720;
     float width = config.width;
     float height = config.height;
     self.gpuPreView = [[GPUImageView alloc] init];
-//    [self.gpuPreView setBackgroundColorRed:1 green:0 blue:0 alpha:1];
     self.gpuPreView.fillMode = kGPUImageFillModeStretch;
     [self.preBackgroundView addSubview:self.gpuPreView];
     [self.gpuPreView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -288,8 +226,10 @@
         make.center.equalTo(self.preBackgroundView);
         make.height.lessThanOrEqualTo(self.preBackgroundView);
         make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(width/height);
-//        make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(1080.0/1620.0);
     }];
+    
+//    self.deocde = [[EditorFFmpegDecode alloc] initWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"]]];
+//    [self.deocde addTarget:self.gpuPreView];
     
 //    GuidelineView *guideline = [[GuidelineView alloc] init];
 //    guideline.backgroundColor = [UIColor redColor];
@@ -344,13 +284,13 @@
         make.centerY.equalTo(self.editorControlBar);
     }];
     
-    self.editorData = [EditorData sharedInstance];
-    MediaTrack *mainTrack = self.editorData.tracks[0];
-    MediaSegment *lastSeg = mainTrack.segments.lastObject;
-    uint64_t timeNum = lastSeg.target_timerange.start + lastSeg.target_timerange.duration;
-    totalTimeLab.text = [self convertSecondsTimecode:timeNum];
-    self.totalSecond = timeNum;
-    
+//    self.editorData = [EditorData sharedInstance];
+//    MediaTrack *mainTrack = self.editorData.tracks[0];
+//    MediaSegment *lastSeg = mainTrack.segments.lastObject;
+//    uint64_t timeNum = lastSeg.target_timerange.start + lastSeg.target_timerange.duration;
+//    totalTimeLab.text = [self convertSecondsTimecode:timeNum];
+//    self.totalSecond = timeNum;
+//    
     UIButton *playButton = [UIButton new];
     [playButton setImage:[UIImage imageNamed:@"ms_play_icon"] forState:UIControlStateNormal];
     [playButton setImage:[UIImage imageNamed:@"ms_pause_icon"] forState:UIControlStateSelected];
@@ -400,68 +340,180 @@
 }
 
 - (void)playButtonClick:(UIButton *)sender {
-    sender.selected = !sender.selected;
-    if (sender.isSelected) {
-        [self.audioPlayer play];
-        dispatch_resume(self->video_render_timer);
-        sender.enabled = FALSE;
+//    [self.deocde appendClip:@"" trimIn:0 trimOut:1000];
+    
+
+    EditorFFmpegDecode *deo = self.ddee[1];
+    
+    sender.selected = YES;
+    self.totalSecond = 0;
+}
+
+// 计算保持宽高比的变换矩阵
+- (CGAffineTransform)aspectTransformForInput:(NSURL *)inputURL outputSize:(CGSize)outputSize {
+    // 获取原始视频尺寸
+    AVAsset *asset = [AVAsset assetWithURL:inputURL];
+    CGSize naturalSize = CGSizeZero;
+    NSArray *tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
+    if (tracks.count > 0) {
+        AVAssetTrack *videoTrack = tracks[0];
+        naturalSize = videoTrack.naturalSize;
     }
     
+    if (CGSizeEqualToSize(naturalSize, CGSizeZero)) {
+        return CGAffineTransformIdentity;
+    }
+    
+    // 计算宽高比
+    CGFloat videoAspect = naturalSize.width / naturalSize.height;
+    CGFloat viewAspect = outputSize.width / outputSize.height;
+    
+    // 初始化缩放值
+    CGFloat xScale = 1.0f;
+    CGFloat yScale = 1.0f;
+    
+    // 计算合适的缩放比例
+    if (videoAspect > viewAspect) {
+        // 视频比视图宽（横向视频）：缩放高度，上下加黑边
+        yScale = viewAspect / videoAspect;
+    } else {
+        // 视频比视图高（竖向视频）：缩放宽度，左右加黑边
+        xScale = videoAspect / viewAspect;
+    }
+    
+    // 创建缩放变换
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    transform = CGAffineTransformMakeScale(xScale, yScale);
+    return transform;
+}
+
+- (void)clipCurrentTime:(int64_t)current {
+    //转场默认1s
+    if (current >= 2000000 && self.totalSecond == 0) {
+        NSLog(@"zhuan chang kaishi  %lld",current);
+        self.totalSecond = 200;
+        
+        GPUImageTransformFilter *filter = self.transformFilters[0];
+        GPUImageTransformFilter *filter1 = self.transformFilters[1];
+        
+        [filter removeTarget:self.gpuPreView];
+        [filter addTarget:self.transitionFilter];
+        [filter1 addTarget:self.transitionFilter];
+        
+        [self.transitionFilter addTarget:self.gpuPreView];
+
+
+        EditorFFmpegDecode *deo2 = [self.ddee lastObject];
+        [deo2 beginDecode];
+    }
+    
+    if (current > 2000000 && self.totalSecond == 200) {
+        float maintime = (current - 2000000)/(1000000*1.0);
+        NSLog(@"current %lld maintime --- %f",current,maintime);
+        [self.transitionFilter setFloat:maintime forUniformName:@"maintime"];
+    }
+    
+    if (current >= 3000000 && self.totalSecond == 200) {
+        
+        NSLog(@"zhuan chang houmian  %lld",current);
+        self.totalSecond = 100;
+        
+        GPUImageTransformFilter *filter1 = self.transformFilters[1];
+        [filter1 removeTarget:self.transitionFilter];
+        
+        [filter1 addTarget:self.gpuPreView];
+    }
+     
+    
+    
+    
+//    if (current >= 3000000) {
+//        [self.originMoviewrite finishRecordingWithCompletionHandler:^{
+//            NSString *finalPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+//            NSLog(@"%@",finalPath);
+//        }];
+//    }
 }
 
 - (void)setupMainTrack {
-    self.timelineView = [[RanMediaTimeline alloc] initWithFrame:CGRectZero];
-    [self.view addSubview:self.timelineView];
-    [self.timelineView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.editorControlBar.mas_bottom);
-        make.left.right.bottom.equalTo(self.view);
-    }];
+    NSURL *url1 = [[NSBundle mainBundle] URLForResource:@"flower" withExtension:@"MP4"];
+    AVAsset *asset1 = [AVAsset assetWithURL:url1];
     
-    UIView *playHead = [UIView new];
-    playHead.backgroundColor = [UIColor whiteColor];
-    [self.view addSubview:playHead];
-    [playHead mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.bottom.equalTo(self.timelineView);
-        make.width.mas_equalTo(2);
-        make.centerX.equalTo(self.view);
-    }];
+    NSURL *url2 = [[NSBundle mainBundle] URLForResource:@"samplevv" withExtension:@"mp4"];
+    AVAsset *asset2 = [AVAsset assetWithURL:url2];
     
-    UIEdgeInsets bottomEdge;
-    if (@available(iOS 11.0, *)) {
-        bottomEdge = UIApplication.sharedApplication.keyWindow.safeAreaInsets;
-    }
-    bottomEdge = UIEdgeInsetsZero;
+    CGFloat widthPerSecond = 40;
+    CGSize imageSize = CGSizeMake(30, 45);
     
-    MediaBottomActionView *bottomView = [MediaBottomActionView new];
-    bottomView.delegate = self;
-    [self.view addSubview:bottomView];
-    [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.equalTo(self.view);
-        make.bottom.equalTo(self.view).offset(-bottomEdge.bottom);
-        make.height.mas_equalTo(90);
+    VITimelineView *timelineView =
+    [VITimelineView timelineViewWithAssets:@[asset1, asset2]
+                                 imageSize:imageSize
+                            widthPerSecond:widthPerSecond];
+    timelineView.delegate = self;
+    timelineView.rangeViewDelegate = self;
+    timelineView.backgroundColor = [UIColor colorWithRed:0.11 green:0.15 blue:0.34 alpha:1.00];
+    timelineView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:timelineView];
+    [timelineView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
+    [timelineView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+    [timelineView.heightAnchor constraintEqualToConstant:400].active = YES;
+    [timelineView.topAnchor constraintEqualToAnchor:self.editorControlBar.bottomAnchor constant:20].active = YES;
+    
+    CIImage *ciimage = [CIImage imageWithColor:[CIColor colorWithRed:0.30 green:0.59 blue:0.70 alpha:1]];
+    CGImageRef cgimage = [[CIContext context] createCGImage:ciimage fromRect:CGRectMake(0, 0, 1, 60)];
+    UIImage *image = [UIImage imageWithCGImage:cgimage];
+    timelineView.centerLineView.image = image;
+    [timelineView.rangeViews enumerateObjectsUsingBlock:^(VIRangeView * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        obj.clipsToBounds = YES;
+        obj.layer.cornerRadius = 4;
+        obj.leftEarView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
+        obj.rightEarView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
+        obj.backgroundView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
     }];
-    [bottomView reloadDataByType:kBottomHomeType];
+    self.timelineView = timelineView;
+    
+//    UIView *playHead = [UIView new];
+//    playHead.backgroundColor = [UIColor whiteColor];
+//    [self.view addSubview:playHead];
+//    [playHead mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.top.bottom.equalTo(self.timelineView);
+//        make.width.mas_equalTo(2);
+//        make.centerX.equalTo(self.view);
+//    }];
+    
+//    UIEdgeInsets bottomEdge;
+//    if (@available(iOS 11.0, *)) {
+//        bottomEdge = UIApplication.sharedApplication.keyWindow.safeAreaInsets;
+//    }
+//    bottomEdge = UIEdgeInsetsZero;
+//    
+//    MediaBottomActionView *bottomView = [MediaBottomActionView new];
+//    bottomView.delegate = self;
+//    [self.view addSubview:bottomView];
+//    [bottomView mas_makeConstraints:^(MASConstraintMaker *make) {
+//        make.left.right.equalTo(self.view);
+//        make.bottom.equalTo(self.view).offset(-bottomEdge.bottom);
+//        make.height.mas_equalTo(90);
+//    }];
+//    [bottomView reloadDataByType:kBottomHomeType];
 }
 
 - (void)setupResource {
     self.editorData = [EditorData sharedInstance];
+    
+    MediaTrack *videoTrack = [[MediaTrack alloc] init];
+    videoTrack.type = MediaTrackTypeVideo;
+    [self.editorData.tracks addObject:videoTrack];
+    
+    MediaSegment *effectSegment1 = [[MediaSegment alloc] init];
+    effectSegment1.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:3000000];
+    [videoTrack.segments addObject:effectSegment1];
+    
     MediaTrack *mainTrack = self.editorData.tracks[0];
-    
-    self.audioPlayer = [[EditorAudioPlayer alloc] initWithMediaTrack:mainTrack];
    
-    for (int i = 0; i < mainTrack.segments.count; i ++) {
-        MediaSegment *segment = mainTrack.segments[i];
-        if (i == 0) {
-            self.firstSegment = segment;
-        }
-        if (i == 1) {
-            self.secondSegment = segment;
-        }
-    }
+//    [self.timelineView initSubviewsWithSegments:mainTrack.segments];
     
-    [self.timelineView initSubviewsWithSegments:mainTrack.segments];
-    
-    [self addTrackSegment:nil];
+//    [self addTrackSegment:nil];
     
 //    self.timelineView.delegate = self;
     
@@ -500,64 +552,107 @@
 //    [self.editorData.tracks addObject:effectTrack];
 //    [self.editorData.tracks addObject:effectTrack1];
 }
-
-// 判断是加在自己的track上 还是开启新的track
-- (void)addTrackSegment:(MediaSegment *)segment {
-    // 是否相交
-    MediaTrackType type = MediaTrackTypeEffect;
-    BOOL createNewTrack = FALSE;
-    for (int i = 0; i < self.editorData.tracks.count; i ++) {
-        MediaTrack *track = self.editorData.tracks[i];
-        if (track.type == type) {
-            for (int j = 0; j < track.segments.count; j ++) {
-                MediaSegment *insideSegment = track.segments[j];
-                CMTimeRange Intersection = CMTimeRangeGetIntersection([segment getAVFoundationTargetTimeRange],[insideSegment getAVFoundationTargetTimeRange]);
-                if (!CMTimeRangeEqual(Intersection, CMTimeRangeMake(kCMTimeZero, kCMTimeZero))) {
-                    NSLog(@"有交集");
-                    createNewTrack = YES;
-                } else {
-                    NSLog(@"无交集");
-                    
-//                    [track.segments addObject:segment];
-                    [self.timelineView reloadDa];
-                    return;
-                }
-            }
-        } else {
-            createNewTrack = YES;
-        }
-    }
-    
-    
-    if (createNewTrack) {
-//        MediaTrack *track = [[MediaTrack alloc] init];
-//        track.type = type;
-//        [self.editorData.tracks addObject:track];
-//        [track.segments addObject:segment];
-    }
-    [self.timelineView reloadDa];
-    
-}
-
-- (void)mediaBottomActionViewClick:(MediaBottomHomeAction)type {
-    if (type == kHomeTypeEffect) {
-        MediaSegment *effectSegment1 = [[MediaSegment alloc] init];
-        effectSegment1.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:0 timeRangeDuration:3000000];
-//        MediaSegment *effectSegment2 = [[MediaSegment alloc] init];
-//        effectSegment2.target_timerange = [[MediaTimeRange alloc] initWithTimeRangeStart:14000000 timeRangeDuration:3000000];
-        
-        [self addTrackSegment:effectSegment1];
-    }
-}
-
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
     NSLog(@"scrollView.contentSize.x %f",scrollView.contentSize.width);
     NSLog(@"scrollView.contentOffset.x %f",scrollView.contentOffset.x);
 }
 
+- (MediaClip *)videoInfoWithPath:(NSString *)path {
+    AVFormatContext *fmt_ctx = NULL;
+    const char *url = [[[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"] cStringUsingEncoding:NSUTF8StringEncoding];
+    MediaClip *clip = [MediaClip new];
+    clip.filePath = path;
+   // 打开媒体文件
+   if (avformat_open_input(&fmt_ctx, url, NULL, NULL) < 0) {
+       fprintf(stderr, "Could not open file\n");
+   }
+   
+   // 获取流信息
+   if (avformat_find_stream_info(fmt_ctx, NULL) < 0) {
+       fprintf(stderr, "Could not find stream info\n");
+   }
+   
+   // 打印文件基础信息
+   av_dump_format(fmt_ctx, 0, url, 0);
+   
+   // 遍历所有流
+   for (int i = 0; i < fmt_ctx->nb_streams; i++) {
+       AVStream *stream = fmt_ctx->streams[i];
+       AVCodecParameters *codec_par = stream->codecpar;
+       
+       printf("\nStream #%d:\n", i);
+       
+       // 判断流类型
+       if (codec_par->codec_type == AVMEDIA_TYPE_VIDEO) {
+           printf("  Type: Video\n");
+           printf("  Codec: %s\n", avcodec_get_name(codec_par->codec_id));
+           printf("  Resolution: %dx%d\n", codec_par->width, codec_par->height);
+           printf("  Pixel Format: %s\n", av_get_pix_fmt_name(codec_par->format));
+           printf("  Frame Rate: %f fps\n", round(av_q2d(stream->avg_frame_rate)));
+       } else if (codec_par->codec_type == AVMEDIA_TYPE_AUDIO) {
+           printf("  Type: Audio\n");
+           printf("  Codec: %s\n", avcodec_get_name(codec_par->codec_id));
+           printf("  Sample Rate: %d Hz\n", codec_par->sample_rate);
+           printf("  Channels: %d\n", codec_par->channels);
+           printf("  Channel Layout: %"PRIu64"\n", codec_par->channel_layout);
+           printf("  Sample Format: %s\n", av_get_sample_fmt_name(codec_par->format));
+       }
+       
+       // 公共信息
+       printf("  Bitrate: %lld bps\n", codec_par->bit_rate);
+       printf("  Duration: %.2f seconds\n",
+              stream->duration * av_q2d(stream->time_base));
+       printf("  Duration: %lld total seconds\n",
+              fmt_ctx->duration);
+   }
+   
+   // 获取元数据
+   AVDictionaryEntry *tag = NULL;
+   printf("\nMetadata:\n");
+   while ((tag = av_dict_get(fmt_ctx->metadata, "", tag, AV_DICT_IGNORE_SUFFIX))) {
+       printf("  %s: %s\n", tag->key, tag->value);
+   }
+   
+   // 清理资源
+   avformat_close_input(&fmt_ctx);
+    return clip;
+}
+
 //是否跨多轨
 - (BOOL)videoSegmentContainOtherSegment:(MediaSegment *)segment {
     return YES;
+}
+
+- (void)rangeView:(VIRangeView *)rangeView didChangeActive:(BOOL)isActive {
+    NSLog(@"rangeView:%@ didchangeActive: %@", rangeView, @(isActive));
+}
+
+- (void)rangeView:(VIRangeView *)rangeView updateLeftOffset:(CGFloat)offset isAuto:(BOOL)isAuto {
+    NSLog(@"2.updateLeftOffset rangeView offset: %@ width: %@", @(offset), @(rangeView.contentWidth));
+}
+
+- (void)rangeView:(VIRangeView *)rangeView updateRightOffset:(CGFloat)offset isAuto:(BOOL)isAuto {
+    NSLog(@"2.updateRightOffset rangeView offset: %@ width: %@", @(offset), @(rangeView.contentWidth));
+}
+
+- (void)rangeViewBeginUpdateLeft:(VIRangeView *)rangeView {
+    NSLog(@"1.rangeViewBeginUpdateLeft rangeView width: %@", @(rangeView.contentWidth));
+}
+
+- (void)rangeViewBeginUpdateRight:(VIRangeView *)rangeView {
+    NSLog(@"1.rangeViewBeginUpdateRight rangeView width: %@", @(rangeView.contentWidth));
+}
+
+- (void)rangeViewEndUpdateLeftOffset:(VIRangeView *)rangeView {
+    NSLog(@"3.rangeViewEndUpdateLeftOffset rangeView width: %@", @(rangeView.contentWidth));
+}
+
+- (void)rangeViewEndUpdateRightOffset:(VIRangeView *)rangeView {
+    NSLog(@"3.rangeViewEndUpdateRightOffset rangeView width: %@", @(rangeView.contentWidth));
+}
+
+- (void)timelineView:(nonnull VITimelineView *)view didChangeActive:(BOOL)isActive {
+    NSLog(@"timelineview didchangeActive: %@", @(isActive));
 }
 
 

@@ -1,13 +1,15 @@
 PODS:
+  - ffmpeg_kit (6.0):
+    - ffmpeg_kit/Core (= 6.0)
+  - ffmpeg_kit/Core (6.0)
   - GPUImage (0.1.7)
-  - IJKMediaFramework (0.8.9)
   - libyuv-iOS (1.0.2)
   - Masonry (1.1.0)
   - MBProgressHUD (1.2.0)
 
 DEPENDENCIES:
+  - ffmpeg_kit (from `https://github.com/snice/ffmpeg_kit.git`)
   - GPUImage
-  - IJKMediaFramework (from `https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json`)
   - libyuv-iOS (~> 1.0.2)
   - Masonry
   - MBProgressHUD
@@ -20,16 +22,21 @@ SPEC REPOS:
     - MBProgressHUD
 
 EXTERNAL SOURCES:
-  IJKMediaFramework:
-    :podspec: https://github.com/debugly/ijkplayer/releases/download/k0.8.9/IJKMediaFramework.spec.json
+  ffmpeg_kit:
+    :git: https://github.com/snice/ffmpeg_kit.git
+
+CHECKOUT OPTIONS:
+  ffmpeg_kit:
+    :commit: fbf71e0d0c12ed105fb3b5ffdfde48eee1ce7110
+    :git: https://github.com/snice/ffmpeg_kit.git
 
 SPEC CHECKSUMS:
+  ffmpeg_kit: 5a835d63a2bef2f60922787d42c79ac7aa6264c5
   GPUImage: 733a5f0fab92df9de1c37ba9df520a833ccb406d
-  IJKMediaFramework: aa80bbca8d5443171b2c4d5cc025cc013b2172e3
   libyuv-iOS: 5a154ccc84ec754029886ecb607512731fe30640
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
 
-PODFILE CHECKSUM: c159cd4060911ea946cae5623f76bbdb1abfc53d
+PODFILE CHECKSUM: 45cb6f3aaab459a2064433703c621d05b7f44225
 
 COCOAPODS: 1.16.2
