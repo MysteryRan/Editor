@@ -9,12 +9,12 @@
 #import <GPUImage/GPUImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
+@class EditorFFmpegDecode;
 @protocol EditorFFmpegDecodeDelegate <NSObject>
 
 @optional
 - (void)reveiveFrameToRenderer:(CVPixelBufferRef)img;
-- (void)clipCurrentTime:(int64_t)current;
+- (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde;
 
 @end
 

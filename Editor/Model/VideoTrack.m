@@ -34,15 +34,18 @@
     clip.inPoint = self.current_in_point;
     clip.trimIn = trimIn;
     clip.trimOut = trimOut;
-    clip.outPoint = trimOut - trimIn;
+    clip.outPoint = clip.inPoint + trimOut - trimIn;
     self.current_in_point = clip.outPoint;
     [self.clips addObject:clip];
     return clip;
 }
 
-- (void)clipCurrentTime:(int64_t)current {
-    if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:)]) {
-        [self.decodeDelegate clipCurrentTime:current];
+- (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
+    if (current >= deocde.outPoint) {
+        deocde.delegate = nil;
+    }
+    if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
+        [self.decodeDelegate clipCurrentTime:current withDecode:deocde];
     }
 }
 

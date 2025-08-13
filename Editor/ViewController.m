@@ -41,59 +41,12 @@
 @property(nonatomic, strong) UIView *preBackgroundView;
 @property(nonatomic, strong) UIView *editorControlBar;
 @property(nonatomic, strong) GPUImageView *gpuPreView;
-
-@property (nonatomic, strong)EditorffmpegReader *ffmpegReader;
-
+@property(nonatomic, strong) UILabel *currentTimeLab;
 @property (nonatomic, strong) EditorData *editorData;
-
-@property (nonatomic, strong) MediaSegment *firstSegment;
-@property (nonatomic, strong) MediaSegment *secondSegment;
-
-@property (nonatomic, strong) EditorffmpegReader *secondReader;
-
-@property (nonatomic, strong) GPUImageFilter *currentFilter;
-@property (nonatomic, strong) GPUImageFilter *nextFilter;
-
-@property (nonatomic, strong) GPUImageFilter *pipFilter;
-
-
-
-@property (nonatomic, strong) MR0x31FFMpegMovie *firstMovie;
-@property (nonatomic, strong) MR0x31FFMpegMovie *secondMovie;
-
-@property (nonatomic, assign) uint64_t lastDuration;
-@property (nonatomic, strong) GPUImageTwoInputFilter *currentTrans;
-
-@property (nonatomic, strong) GPUImagePicture *picsss;
-
-@property (nonatomic, strong) GPUImageTransformFilter *picTrans;
-
-
-@property (nonatomic, strong) EditorAudioPlayer *audioPlayer;
-@property (nonatomic, strong) GPUImageFilterPipeline *pipeLine;
-
-@property (nonatomic, strong) VITimelineView *timelineView;
-
-@property (nonatomic, assign) CGFloat contentOffset;
-
-@property (nonatomic, strong) EditorMovieWrite *movieWrite;
-
-@property (nonatomic, strong) EditorffmpegReader *pipReader;
-@property (nonatomic, strong) MutilpleTrackContentView *trackContentView;
-
-@property (nonatomic, strong) GPUImageMovieWriter *originMoviewrite;
-
-@property (nonatomic, assign) uint64_t totalSecond;
-@property (nonatomic, strong) UILabel *currentTimeLab;
-
-
-@property (nonatomic, strong) EditorTimeline *editorTimeline;
-@property (nonatomic, strong) EditorFFmpegDecode *deocde;
-@property (nonatomic, strong) NSMutableArray *ddee;
+@property (nonatomic, strong) NSMutableArray *decodes;
 @property (nonatomic, strong) GPUImageTwoInputTransitonFilter *transitionFilter;
-
-
 @property (nonatomic, strong) NSMutableArray *transformFilters;
+@property (nonatomic, strong) VITimelineView *timelineView;
 
 
 @end
@@ -104,7 +57,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor = [UIColor blackColor];
-    self.ddee = [NSMutableArray arrayWithCapacity:0];
+    self.decodes = [NSMutableArray arrayWithCapacity:0];
     self.transformFilters = [NSMutableArray arrayWithCapacity:0];
     
     [self setupPreView];
@@ -113,92 +66,42 @@
     [self setupResource];
     
     VideoTrack *track = [[VideoTrack alloc] init];
-    track.decodeDelegate = self;
+//    track.decodeDelegate = self;
+    [self.editorData.tracks addObject:track];
     
-    NSString *filePath = [[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"];
-    NSString *filePath2 = [[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"];
+    NSString *firstFilePath = [[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"];
+    NSString *secondFilePath = [[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"];
 
-    EditorFFmpegDecode *deo = [track appendClip:filePath trimIn:0 trimOut:5000000];
-    EditorFFmpegDecode *deo2 = [track appendClip:filePath2 trimIn:0 trimOut:5000000];
+    EditorFFmpegDecode *firstDecode = [track appendClip:firstFilePath trimIn:0 trimOut:3000000];
+    EditorFFmpegDecode *secondDecode = [track appendClip:secondFilePath trimIn:0 trimOut:5000000];
     
-    GPUImageTransformFilter *aspectFilter = [[GPUImageTransformFilter alloc] init];
-    aspectFilter.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:filePath] outputSize:CGSizeMake(720, 720)];
+    GPUImageTransformFilter *firstAspectFilter = [[GPUImageTransformFilter alloc] init];
+    firstAspectFilter.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:firstFilePath] outputSize:CGSizeMake(720, 720)];
     
-    GPUImageTransformFilter *aspectFilter2 = [[GPUImageTransformFilter alloc] init];
-    aspectFilter2.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:filePath2] outputSize:CGSizeMake(720, 720)];
+    GPUImageTransformFilter *secondAspectFilter = [[GPUImageTransformFilter alloc] init];
+    secondAspectFilter.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:secondFilePath] outputSize:CGSizeMake(720, 720)];
+    
 
-    [deo addTarget:aspectFilter];
-    [deo2 addTarget:aspectFilter2];
+    [self.decodes addObject:firstDecode];
+    [self.decodes addObject:secondDecode];
     
-//    [aspectFilter addTarget:self.gpuPreView];
-//    [aspectFilter addTarget:self.originMoviewrite];
-//    [self.originMoviewrite startRecording];
-    
-//    GPUImageFilter *finalFilter = [[GPUImageFilter alloc] init];
-    
-//    GPUImageFilterPipeline *pee = [[GPUImageFilterPipeline alloc] initWithOrderedFilters:@[aspectFilter] input:deo output:finalFilter];
-//    [finalFilter addTarget:self.gpuPreView];
-//    pee.output = self.originMoviewrite;
-
-    [self.ddee addObject:track];
-    [self.ddee addObject:deo];
-    [self.ddee addObject:deo2];
-    
-    [self.transformFilters addObject:aspectFilter];
-    [self.transformFilters addObject:aspectFilter2];
+    [self.transformFilters addObject:firstAspectFilter];
+    [self.transformFilters addObject:secondAspectFilter];
     
     //转场原理
     /*
      切换fliter 单个 多个之间切换
      */
     self.transitionFilter = [[GPUImageTwoInputTransitonFilter alloc] initWithFragmentShaderFromFile:@"Heart"];
-    [aspectFilter addTarget:self.gpuPreView];
-    [deo beginDecode];
-}
-
-- (void)mutilAudio {
-    self.audioPlayer = [[EditorAudioPlayer alloc] init];
-    [self.audioPlayer play];
-}
-
-- (void)effectsControlWithTime:(uint64_t)time {
-    double fps = 30.0;
-    uint64_t av_time_base = 1000000;
-    float perFrame = 1.0 / fps * av_time_base;
+    [self.transitionFilter setFloat:0 forUniformName:@"maintime"];
+    [firstDecode addTarget:firstAspectFilter];
+    [secondDecode addTarget:secondAspectFilter];
     
-    for (int i = 0; i < self.editorData.tracks.count; i ++) {
-        MediaTrack *track = self.editorData.tracks[i];
-        if (track.type == MediaTrackTypeEffect) {
-            for (int j = 0; j < track.segments.count; j ++) {
-                MediaSegment *effectSeg = track.segments[j];
-                uint64_t distance = time - effectSeg.target_timerange.start;
-                if (distance < perFrame && distance > 0) {
-                    if (CMTimeRangeContainsTime(self.ffmpegReader.resourceTimeRange, [effectSeg getAVFoundationTargetTimeStart])) {
-                        [self.ffmpegReader addFilterBySegment:effectSeg];
-                    }
-                    
-                    
-//                    if (track.type == MediaTrackTypeVideo) {
-//                        for (int k = 0; k < track.segments.count; k ++) {
-//                            MediaSegment *videoSeg = track.segments[k];
-//                            CMTimeRange videoRange = [videoSeg getAVFoundationTargetTimeRange];
-//                            if (CMTimeRangeContainsTime(videoRange, [effectSeg getAVFoundationTargetTimeStart])) {
-//
-//
-//                            }
-//                        }
-//                    }
-                }
-                
-                uint64_t removedistance = time - (effectSeg.target_timerange.start + effectSeg.target_timerange.duration);
-                if (removedistance < perFrame && distance > 0) {
-                    if (CMTimeRangeContainsTime(self.ffmpegReader.resourceTimeRange, [effectSeg getAVFoundationTargetTimeStart])) {
-                        [self.ffmpegReader removeFilterBySegment:effectSeg];
-                    }
-                }
-            }
-        }
-    }
+//    [firstAspectFilter addTarget:self.gpuPreView];
+//    [firstDecode beginDecode];
+    
+    [secondAspectFilter addTarget:self.gpuPreView];
+    [secondDecode beginDecode];
 }
 
 - (void)setupPreView {
@@ -227,26 +130,6 @@
         make.height.lessThanOrEqualTo(self.preBackgroundView);
         make.width.equalTo(self.gpuPreView.mas_height).multipliedBy(width/height);
     }];
-    
-//    self.deocde = [[EditorFFmpegDecode alloc] initWithURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"]]];
-//    [self.deocde addTarget:self.gpuPreView];
-    
-//    GuidelineView *guideline = [[GuidelineView alloc] init];
-//    guideline.backgroundColor = [UIColor redColor];
-//    [self.preBackgroundView addSubview:guideline];
-//    [guideline mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.edges.equalTo(self.preBackgroundView);
-//    }];
-    
-//    UIView *v = [UIView new];
-//    v.layer.borderWidth = 2;
-//    v.layer.borderColor = [UIColor redColor].CGColor;
-//    [self.gpuPreView addSubview:v];
-//    [v mas_makeConstraints:^(MASConstraintMaker *make) {
-//        make.center.equalTo(self.gpuPreView);
-//        make.width.equalTo(self.gpuPreView).multipliedBy(1);
-//        make.height.equalTo(self.gpuPreView).multipliedBy(1);
-//    }];
 }
 
 - (void)setupPlaycontrol {
@@ -340,13 +223,6 @@
 }
 
 - (void)playButtonClick:(UIButton *)sender {
-//    [self.deocde appendClip:@"" trimIn:0 trimOut:1000];
-    
-
-    EditorFFmpegDecode *deo = self.ddee[1];
-    
-    sender.selected = YES;
-    self.totalSecond = 0;
 }
 
 // 计算保持宽高比的变换矩阵
@@ -387,52 +263,40 @@
     return transform;
 }
 
-- (void)clipCurrentTime:(int64_t)current {
-    //转场默认1s
-    if (current >= 2000000 && self.totalSecond == 0) {
-        NSLog(@"zhuan chang kaishi  %lld",current);
-        self.totalSecond = 200;
+- (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
+//    return;
+    //转场默认1s 开始转场时间为2000000
+    NSLog(@"current %lld maintime --- ",current);
+    
+    if (0 <= current - 2000000 && current - 2000000 < 33333) {
+        NSLog(@"transition begin  %lld",current);
         
         GPUImageTransformFilter *filter = self.transformFilters[0];
         GPUImageTransformFilter *filter1 = self.transformFilters[1];
         
         [filter removeTarget:self.gpuPreView];
+        
         [filter addTarget:self.transitionFilter];
         [filter1 addTarget:self.transitionFilter];
         
         [self.transitionFilter addTarget:self.gpuPreView];
-
-
-        EditorFFmpegDecode *deo2 = [self.ddee lastObject];
-        [deo2 beginDecode];
+        EditorFFmpegDecode *secondDecode = [self.decodes lastObject];
+        [secondDecode beginDecode];
     }
     
-    if (current > 2000000 && self.totalSecond == 200) {
+    if (2000000<= current && current < 3000000) {
         float maintime = (current - 2000000)/(1000000*1.0);
-        NSLog(@"current %lld maintime --- %f",current,maintime);
-        [self.transitionFilter setFloat:maintime forUniformName:@"maintime"];
+        NSLog(@"transition doing  %lld maintime %f",current,maintime);
+        [self.transitionFilter setFloat:0.5 forUniformName:@"maintime"];
     }
     
-    if (current >= 3000000 && self.totalSecond == 200) {
-        
-        NSLog(@"zhuan chang houmian  %lld",current);
-        self.totalSecond = 100;
-        
+    if (current - 3000000 >= 33333) {
+        NSLog(@"transition after  %lld",current);
+
         GPUImageTransformFilter *filter1 = self.transformFilters[1];
         [filter1 removeTarget:self.transitionFilter];
-        
         [filter1 addTarget:self.gpuPreView];
     }
-     
-    
-    
-    
-//    if (current >= 3000000) {
-//        [self.originMoviewrite finishRecordingWithCompletionHandler:^{
-//            NSString *finalPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
-//            NSLog(@"%@",finalPath);
-//        }];
-//    }
 }
 
 - (void)setupMainTrack {

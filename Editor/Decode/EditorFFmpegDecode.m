@@ -63,6 +63,7 @@ const AVRational COMMON_TIME_BASE = {1, 600};
     AVStream *stream;
     int video_stream_idx;
     int ret;
+    int64_t next_pts;  // 全局PTS计数器
 }
 
 @property (assign, nonatomic) CVPixelBufferPoolRef pixelBufferPool;
@@ -359,12 +360,12 @@ const AVRational COMMON_TIME_BASE = {1, 600};
 
 // 时间戳转换函数
 int64_t convert_to_common_pts(int64_t src_pts, AVRational src_time_base) {
-    return av_rescale_q(src_pts, src_time_base, COMMON_TIME_BASE);
+    return av_rescale_q(src_pts, src_time_base, AV_TIME_BASE_Q);
 }
 
 // 时间值转换函数
 double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
-    return av_q2d(COMMON_TIME_BASE) * convert_to_common_pts(src_pts, src_time_base);
+    return av_q2d(AV_TIME_BASE_Q) * convert_to_common_pts(src_pts, src_time_base);
 }
 
 - (void)beginDecode {
@@ -439,13 +440,34 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
             }
             
             // 计算帧时间（秒）
-            // flower time_base 1/600      fps 1/30
-            // samplevv time_base 1/90000  fps 1/30
-            double frame_time = self->frame->pts * av_q2d(self->stream->time_base);
+            // flower time_base 1/600      fps 1/30 pts+= 20
+            // samplevv time_base 1/90000  fps 1/30 pts+= 300
+            // 更新全局PTS计数器（按帧率递增）
+//            self->next_pts += av_rescale_q(1, AV_TIME_BASE_Q, (AVRational){1, 30}); // 假设30fps
+//            NSLog(@"hhhhh frame pts %lld",av_rescale_q(1, AV_TIME_BASE_Q, self->stream->time_base));
+
             
-            frame_time = convert_to_common_time(self->frame->pts, self->stream->time_base);
+            self->next_pts += 20;
+            int64_t new_pts = av_rescale_q_rnd(
+               self->frame->pts,
+                self->stream->time_base,    // 输入时间基
+               AV_TIME_BASE_Q,   // 输出时间基
+                AV_ROUND_NEAR_INF        // 最接近的舍入模式
+            );
             
-//                NSLog(@"frame pts %lld",frame->pts);
+            double frame_time = new_pts * av_q2d(AV_TIME_BASE_Q);
+            
+            NSLog(@"hhhhh frame pts %lld",self->frame->pts);
+
+            
+//            frame_time = convert_to_common_time(self->frame->pts, self->stream->time_base);
+            
+//            NSLog(@"qqqq frame pts %lld",frame->pts);
+
+//            int64_t newnew = av_rescale_q_rnd(self->frame->pts, self->stream->time_base, AV_TIME_BASE_Q, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
+            
+//            NSLog(@"hhhhh frame pts %lld",newnew);
+//            frame_time = newnew * av_q2d(AV_TIME_BASE_Q);
             
             int64_t frame_ll_time = frame_time * AV_TIME_BASE;
             // 检查是否进入目标范围
@@ -480,10 +502,10 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
                 
                 //整个在时间线上的位置
                 int64_t current = 0 + frame_ll_time - self.trimIn;
-//                NSLog(@"neibu  %lld",current);
+                NSLog(@"neibu  %lld",current);
 
-                if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:)]) {
-                    [self.decodeDelegate clipCurrentTime:current];
+                if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
+                    [self.decodeDelegate clipCurrentTime:current withDecode:self];
                 }
                 
 //                if (frame_time >= 3.0) {
@@ -524,7 +546,7 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
 - (void)appendClip:(NSString *)filePath trimIn:(uint64_t)trimIn trimOut:(uint64_t)trimOut {
     previousFrameTime = kCMTimeZero;
     previousActualFrameTime = CFAbsoluteTimeGetCurrent();
-    
+    next_pts = 0;
     self.trimIn = trimIn;
     self.trimOut = trimOut;
     
