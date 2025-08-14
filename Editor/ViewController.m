@@ -66,7 +66,7 @@
     [self setupResource];
     
     VideoTrack *track = [[VideoTrack alloc] init];
-//    track.decodeDelegate = self;
+    track.decodeDelegate = self;
     [self.editorData.tracks addObject:track];
     
     NSString *firstFilePath = [[NSBundle mainBundle] pathForResource:@"flower" ofType:@"MP4"];
@@ -97,11 +97,11 @@
     [firstDecode addTarget:firstAspectFilter];
     [secondDecode addTarget:secondAspectFilter];
     
-//    [firstAspectFilter addTarget:self.gpuPreView];
-//    [firstDecode beginDecode];
+    [firstAspectFilter addTarget:self.gpuPreView];
+    [firstDecode beginDecode];
     
-    [secondAspectFilter addTarget:self.gpuPreView];
-    [secondDecode beginDecode];
+//    [secondAspectFilter addTarget:self.gpuPreView];
+//    [secondDecode beginDecode];
 }
 
 - (void)setupPreView {
@@ -265,9 +265,7 @@
 
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
 //    return;
-    //转场默认1s 开始转场时间为2000000
-    NSLog(@"current %lld maintime --- ",current);
-    
+    //转场默认3s 开始转场时间为2000000
     if (0 <= current - 2000000 && current - 2000000 < 33333) {
         NSLog(@"transition begin  %lld",current);
         
@@ -284,15 +282,16 @@
         [secondDecode beginDecode];
     }
     
-    if (2000000<= current && current < 3000000) {
+    if (2000000<= current && current <= 3000000) {
         float maintime = (current - 2000000)/(1000000*1.0);
         NSLog(@"transition doing  %lld maintime %f",current,maintime);
         [self.transitionFilter setFloat:0.5 forUniformName:@"maintime"];
     }
     
-    if (current - 3000000 >= 33333) {
-        NSLog(@"transition after  %lld",current);
-
+    if (current - 3000000 >= 0 && current - 3000000 < 33333) {
+        NSLog(@"transition after  %lld--%@",current,deocde.filePath);
+        
+        [self.transitionFilter removeTarget:self.gpuPreView];
         GPUImageTransformFilter *filter1 = self.transformFilters[1];
         [filter1 removeTarget:self.transitionFilter];
         [filter1 addTarget:self.gpuPreView];
@@ -519,5 +518,194 @@
     NSLog(@"timelineview didchangeActive: %@", @(isActive));
 }
 
+- (int)trans {
+//#define OUTPUT_TIME_BASE (AVRational){1, 600} // 设置为毫秒精度 (1/1000)
+#define OUTPUT_FILENAME [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"] cStringUsingEncoding:NSUTF8StringEncoding]
+    
+    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:pathToMovie]) {
+        [[NSFileManager defaultManager] removeItemAtPath:pathToMovie error:nil];
+    }
+    
+    
+    const char *input_filename = [[[NSBundle mainBundle] pathForResource:@"samplevv" ofType:@"mp4"] cStringUsingEncoding:NSUTF8StringEncoding];
+
+        AVFormatContext *input_ctx = NULL, *output_ctx = NULL;
+        int ret = 0;
+        int video_stream_index = -1;
+
+        // 1. 打开输入文件
+        if ((ret = avformat_open_input(&input_ctx, input_filename, NULL, NULL)) < 0) {
+            fprintf(stderr, "Could not open input file '%s': %s\n",
+                    input_filename, av_err2str(ret));
+        }
+
+        if ((ret = avformat_find_stream_info(input_ctx, NULL)) < 0) {
+            fprintf(stderr, "Failed to retrieve input stream information: %s\n",
+                    av_err2str(ret));
+        }
+
+        // 打印输入文件信息
+        av_dump_format(input_ctx, 0, input_filename, 0);
+
+        // 2. 创建输出上下文
+        if ((ret = avformat_alloc_output_context2(&output_ctx, NULL, NULL, OUTPUT_FILENAME)) < 0) {
+            fprintf(stderr, "Could not create output context: %s\n", av_err2str(ret));
+        }
+
+        // 3. 复制流并设置新的 time_base
+        for (int i = 0; i < input_ctx->nb_streams; i++) {
+            AVStream *in_stream = input_ctx->streams[i];
+            AVStream *out_stream = avformat_new_stream(output_ctx, NULL);
+            if (!out_stream) {
+                fprintf(stderr, "Failed allocating output stream\n");
+                ret = AVERROR_UNKNOWN;
+            }
+
+            // 复制编解码器参数
+            if ((ret = avcodec_parameters_copy(out_stream->codecpar, in_stream->codecpar)) < 0) {
+                fprintf(stderr, "Failed to copy codec parameters: %s\n", av_err2str(ret));
+            }
+
+            // 设置新的 time_base
+            out_stream->time_base = (AVRational){1,600};
+            
+            // 记录视频和音频流索引
+            if (in_stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                video_stream_index = i;
+                // 对于视频流，设置帧率
+                out_stream->r_frame_rate = in_stream->r_frame_rate;
+                out_stream->avg_frame_rate = in_stream->avg_frame_rate;
+            }
+        }
+
+        // 4. 打开输出文件
+        if (!(output_ctx->oformat->flags & AVFMT_NOFILE)) {
+            if ((ret = avio_open(&output_ctx->pb, OUTPUT_FILENAME, AVIO_FLAG_WRITE)) < 0) {
+                fprintf(stderr, "Could not open output file '%s': %s\n",
+                        OUTPUT_FILENAME, av_err2str(ret));
+            }
+        }
+
+        // 5. 写入文件头
+        if ((ret = avformat_write_header(output_ctx, NULL)) < 0) {
+            fprintf(stderr, "Error occurred when writing header: %s\n", av_err2str(ret));
+        }
+
+        // 6. 处理数据包
+        AVPacket pkt;
+        av_init_packet(&pkt);
+        pkt.data = NULL;
+        pkt.size = 0;
+        
+        int64_t last_video_pts = AV_NOPTS_VALUE;
+        
+        // 用于记录每个流的起始PTS
+        int64_t start_pts[input_ctx->nb_streams];
+        for (int i = 0; i < input_ctx->nb_streams; i++) {
+            start_pts[i] = AV_NOPTS_VALUE;
+        }
+
+        while (1) {
+            if ((ret = av_read_frame(input_ctx, &pkt)) < 0) {
+                // 检查是否是文件结束错误
+                if (ret == AVERROR_EOF) {
+                    fprintf(stderr, "End of input file reached\n");
+                    ret = 0; // 正常结束
+                } else {
+                    fprintf(stderr, "Error reading packet: %s\n", av_err2str(ret));
+                }
+                break;
+            }
+
+            AVStream *in_stream = input_ctx->streams[pkt.stream_index];
+            AVStream *out_stream = output_ctx->streams[pkt.stream_index];
+            
+            // 记录流的起始PTS
+            if (start_pts[pkt.stream_index] == AV_NOPTS_VALUE) {
+                start_pts[pkt.stream_index] = pkt.pts;
+            }
+            
+            // 7. 时间戳转换 (关键步骤)
+            // 计算相对于流开始的PTS
+            int64_t rel_pts = pkt.pts - start_pts[pkt.stream_index];
+            
+            // 转换PTS
+            pkt.pts = av_rescale_q(rel_pts, in_stream->time_base, out_stream->time_base);
+            
+            // 转换DTS
+            if (pkt.dts != AV_NOPTS_VALUE) {
+                int64_t rel_dts = pkt.dts - start_pts[pkt.stream_index];
+                pkt.dts = av_rescale_q(rel_dts, in_stream->time_base, out_stream->time_base);
+            } else {
+                // 如果DTS不可用，使用PTS
+                pkt.dts = pkt.pts;
+            }
+            
+            // 转换duration
+            if (pkt.duration > 0) {
+                pkt.duration = av_rescale_q(pkt.duration, in_stream->time_base, out_stream->time_base);
+            } else {
+                // 估算duration
+                if (in_stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                    pkt.duration = av_rescale_q(1, av_inv_q(in_stream->avg_frame_rate), out_stream->time_base);
+                }
+            }
+            
+            // 8. 检查时间戳连续性 (可选但推荐)
+            if (in_stream->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+                if (last_video_pts != AV_NOPTS_VALUE && pkt.pts <= last_video_pts) {
+                    fprintf(stderr, "Non-monotonic video PTS detected: %"PRId64" <= %"PRId64"\n",
+                            pkt.pts, last_video_pts);
+                    // 修复非单调PTS
+                    pkt.pts = last_video_pts + 1;
+                }
+                last_video_pts = pkt.pts;
+            }
+            
+            // 9. 设置输出包参数
+            pkt.stream_index = out_stream->index;
+            pkt.pos = -1; // 重置位置信息
+            
+            double frame_time = pkt.pts * av_q2d(out_stream->time_base);
+            
+            NSLog(@"hhhhh frame pts %lld ----%f-----%d",pkt.pts,frame_time,out_stream->time_base.den);
+
+            
+            // 10. 写入数据包
+            if ((ret = av_interleaved_write_frame(output_ctx, &pkt)) < 0) {
+                fprintf(stderr, "Error writing packet: %s\n", av_err2str(ret));
+                av_packet_unref(&pkt);
+                break;
+            }
+            
+            av_packet_unref(&pkt);
+        }
+
+        // 11. 写入文件尾
+        if (ret == 0) {
+            if ((ret = av_write_trailer(output_ctx)) < 0) {
+                fprintf(stderr, "Error writing trailer: %s\n", av_err2str(ret));
+            }
+        }
+
+  
+        // 12. 清理资源
+        if (input_ctx) avformat_close_input(&input_ctx);
+        if (output_ctx && !(output_ctx->oformat->flags & AVFMT_NOFILE)) {
+            avio_closep(&output_ctx->pb);
+        }
+        if (output_ctx) avformat_free_context(output_ctx);
+
+        if (ret < 0 && ret != AVERROR_EOF) {
+            fprintf(stderr, "Error occurred: %s\n", av_err2str(ret));
+            return 1;
+        }
+
+    printf("Successfully converted file to new time_base: %d/%d\n");
+    
+    return 1;
+           
+}
 
 @end

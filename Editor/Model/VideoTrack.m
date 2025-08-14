@@ -23,6 +23,7 @@
     self = [super init];
     if (self) {
         self.clips = [NSMutableArray arrayWithCapacity:0];
+        self.current_time = 0;
     }
     return self;
 }

@@ -368,6 +368,36 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
     return av_q2d(AV_TIME_BASE_Q) * convert_to_common_pts(src_pts, src_time_base);
 }
 
+/*
+- (void)beginDecode {
+    self->pkt = av_packet_alloc();
+    self->frame = av_frame_alloc();
+    if (!self->pkt || !self->frame) {
+        self->ret = AVERROR(ENOMEM);
+        return;
+    }
+    while (av_read_frame(fmt_ctx, pkt) >= 0) {
+        if (pkt->stream_index == video_stream_idx) {
+            avcodec_send_packet(dec_ctx, pkt);
+            while (1) {
+                int ret = avcodec_receive_frame(dec_ctx, frame);
+                if (ret == AVERROR(EAGAIN)) break;
+                if (ret < 0) break;
+                AVRational new_tb = {1, 600}; // 目标时间基：毫秒
+                // 转换时间基（原时间基 → 新时间基）
+                frame->pts = av_rescale_q(frame->pts, stream->time_base, new_tb);
+                // 处理帧（如滤镜或编码）
+                double frame_time = self->frame->pts * av_q2d(new_tb);
+                int64_t ff = frame_time * AV_TIME_BASE;
+                NSLog(@"qqqq frame pts %lld---%lld",self->frame->pts,ff);
+                av_frame_unref(frame);
+            }
+        }
+        av_packet_unref(pkt);
+    }
+}
+ */
+
 - (void)beginDecode {
     dispatch_queue_t parseQueue = dispatch_queue_create("parse_queue", DISPATCH_QUEUE_SERIAL);
     dispatch_async(parseQueue, ^{
@@ -379,59 +409,58 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
         return;
     }
     
-        double trimInSec = self.trimIn / (AV_TIME_BASE * 1.0);
-        double trimOutSec = self.trimOut / (AV_TIME_BASE * 1.0);
+    double trimInSec = self.trimIn / (AV_TIME_BASE * 1.0);
+    double trimOutSec = self.trimOut / (AV_TIME_BASE * 1.0);
 
     // 计算起始和结束时间戳（以流时间基为单位）
     int64_t start_ts = (int64_t)(trimInSec / av_q2d(self->stream->time_base));
     int64_t end_ts = (int64_t)(trimOutSec / av_q2d(self->stream->time_base));
-//
-        printf("Decoding from %llds to %llds (ts: %"PRId64" to %"PRId64")\n",self.trimIn, self.trimOut, start_ts, end_ts);
+    printf("Decoding from %llds to %llds (ts: %"PRId64" to %"PRId64")\n",self.trimIn, self.trimOut, start_ts, end_ts);
     
     // 定位到起始位置（关键帧）
-        self->ret = av_seek_frame(self->fmt_ctx, self->video_stream_idx, start_ts, AVSEEK_FLAG_BACKWARD);
-        if (self->ret < 0) {
-            fprintf(stderr, "Seek failed: %s\n", av_err2str(self->ret));
-        return;;
-    }
+//    self->ret = av_seek_frame(self->fmt_ctx, self->video_stream_idx, start_ts, AVSEEK_FLAG_BACKWARD);
+//    if (self->ret < 0) {
+//        fprintf(stderr, "Seek failed: %s\n", av_err2str(self->ret));
+//        return;;
+//    }
     
     // 刷新解码器缓冲区
-        avcodec_flush_buffers(self->dec_ctx);
+    avcodec_flush_buffers(self->dec_ctx);
     
     int in_target_range = 0;
     int frames_decoded = 0;
     
-        self.videoScale = [self createVideoScaleIfNeed:self->dec_ctx];
+    self.videoScale = [self createVideoScaleIfNeed:self->dec_ctx];
 
     // 解码循环
-        while (av_read_frame(self->fmt_ctx, self->pkt) >= 0) {
-            if (self->pkt->stream_index != self->video_stream_idx) {
-            av_packet_unref(self->pkt);
-            continue;
-        }
+    while (av_read_frame(self->fmt_ctx, self->pkt) >= 0) {
+        if (self->pkt->stream_index != self->video_stream_idx) {
+        av_packet_unref(self->pkt);
+        continue;
+    }
         
-//        // 检查是否超出结束时间
-//        NSLog(@"pkt->pts--->%lld",pkt->pts);
-//        if (pkt->pts != AV_NOPTS_VALUE && pkt->pts > end_ts) {
-//            fprintf(stderr, "Error 否超出结束时间: %s\n", av_err2str(ret));
-//            av_packet_unref(pkt);
-//            break;
-//        }
+//    // 检查是否超出结束时间
+//    NSLog(@"pkt->pts--->%lld",pkt->pts);
+//    if (pkt->pts != AV_NOPTS_VALUE && pkt->pts > end_ts) {
+//        fprintf(stderr, "Error 否超出结束时间: %s\n", av_err2str(ret));
+//        av_packet_unref(pkt);
+//        break;
+//    }
         
         // 发送数据包到解码器
-            self->ret = avcodec_send_packet(self->dec_ctx, self->pkt);
-            if (self->ret < 0 && self->ret != AVERROR(EAGAIN)) {
-                fprintf(stderr, "Error sending packet: %s\n", av_err2str(self->ret));
-                av_packet_unref(self->pkt);
-            continue;
-        }
-        
+    self->ret = avcodec_send_packet(self->dec_ctx, self->pkt);
+        if (self->ret < 0 && self->ret != AVERROR(EAGAIN)) {
+            fprintf(stderr, "Error sending packet: %s\n", av_err2str(self->ret));
             av_packet_unref(self->pkt);
+        continue;
+    }
+        
+    av_packet_unref(self->pkt);
         
         // 接收解码后的帧
-        while (self->ret >= 0) {
-            self->ret = avcodec_receive_frame(self->dec_ctx, self->frame);
-            if (self->ret == AVERROR(EAGAIN) || self->ret == AVERROR_EOF) {
+    while (self->ret >= 0) {
+        self->ret = avcodec_receive_frame(self->dec_ctx, self->frame);
+        if (self->ret == AVERROR(EAGAIN) || self->ret == AVERROR_EOF) {
 //                fprintf(stderr, "Error during : %s\n", av_err2str(ret));
                 break;
             } else if (self->ret < 0) {
@@ -443,33 +472,16 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
             // flower time_base 1/600      fps 1/30 pts+= 20
             // samplevv time_base 1/90000  fps 1/30 pts+= 300
             // 更新全局PTS计数器（按帧率递增）
-//            self->next_pts += av_rescale_q(1, AV_TIME_BASE_Q, (AVRational){1, 30}); // 假设30fps
-//            NSLog(@"hhhhh frame pts %lld",av_rescale_q(1, AV_TIME_BASE_Q, self->stream->time_base));
+            AVRational new_tb = {1, 600}; // 目标时间基：毫秒
+            // 转换时间基（原时间基 → 新时间基）
+//        NSLog(@"before %f ---- %lld",av_q2d(self->stream->time_base),self->frame->pts);
 
-            
-            self->next_pts += 20;
-            int64_t new_pts = av_rescale_q_rnd(
-               self->frame->pts,
-                self->stream->time_base,    // 输入时间基
-               AV_TIME_BASE_Q,   // 输出时间基
-                AV_ROUND_NEAR_INF        // 最接近的舍入模式
-            );
-            
-            double frame_time = new_pts * av_q2d(AV_TIME_BASE_Q);
-            
-            NSLog(@"hhhhh frame pts %lld",self->frame->pts);
+        self->frame->pts = av_rescale_q(self->frame->pts, self->stream->time_base, new_tb);;
+        double frame_time = self->frame->pts * av_q2d(new_tb);
+        int64_t frame_ll_time = frame_time * AV_TIME_BASE;
+        
+//        NSLog(@"after %f ---- %lld",av_q2d(self->stream->time_base),self->frame->pts);
 
-            
-//            frame_time = convert_to_common_time(self->frame->pts, self->stream->time_base);
-            
-//            NSLog(@"qqqq frame pts %lld",frame->pts);
-
-//            int64_t newnew = av_rescale_q_rnd(self->frame->pts, self->stream->time_base, AV_TIME_BASE_Q, AV_ROUND_NEAR_INF|AV_ROUND_PASS_MINMAX);
-            
-//            NSLog(@"hhhhh frame pts %lld",newnew);
-//            frame_time = newnew * av_q2d(AV_TIME_BASE_Q);
-            
-            int64_t frame_ll_time = frame_time * AV_TIME_BASE;
             // 检查是否进入目标范围
             if (!in_target_range && frame_ll_time >= self.trimIn) {
                 in_target_range = 1;
@@ -481,7 +493,7 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
 //                NSLog(@"cmopare %lld ---- %lld",frame_ll_time,self.trimOut);
                 frames_decoded++;
                 //匀速播放
-                double timestep = av_q2d(self->stream->time_base) * self->frame->pts;
+                double timestep = av_q2d(new_tb) * self->frame->pts;
                 CMTime currentSampleTime = CMTimeMake(timestep * AV_TIME_BASE, AV_TIME_BASE);
                 CMTime differenceFromLastFrame = CMTimeSubtract(currentSampleTime, self->previousFrameTime);
                 CFAbsoluteTime currentActualTime = CFAbsoluteTimeGetCurrent();
@@ -501,8 +513,8 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
                 //                           frame->width, frame->height);
                 
                 //整个在时间线上的位置
-                int64_t current = 0 + frame_ll_time - self.trimIn;
-                NSLog(@"neibu  %lld",current);
+                int64_t current = self.inPoint + frame_ll_time - self.trimIn;
+//                NSLog(@"neibu  %lld",current);
 
                 if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
                     [self.decodeDelegate clipCurrentTime:current withDecode:self];
@@ -610,7 +622,6 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
 
 }
 
-/*
 - (void)appendPhotoClip:(NSString *)filePath trimIn:(uint64_t)trimIn trimOut:(uint64_t)trimOut {
     // 将图片加载为 AVFrame
     dispatch_queue_t parseQueue = dispatch_queue_create("parse_queue", DISPATCH_QUEUE_SERIAL);
@@ -729,13 +740,13 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
                 int64_t pts = 0;
                 for (int i = 0; i <= frame_count; i++) {
                     frame->pts = pts;
-                    NSLog(@"frame->pts %lld",frame->pts);
+//                    NSLog(@"frame->pts %lld",frame->pts);
                     double frame_time = frame->pts * av_q2d(time_base);
                     usleep(1000000.0 * frame_interval_sec);
                     uint32_t frame_ll_time = frame_time * AV_TIME_BASE;
                     int64_t current = 0 + frame_ll_time - trimIn;
-                    if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:)]) {
-                        [self.decodeDelegate clipCurrentTime:current];
+                    if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
+                        [self.decodeDelegate clipCurrentTime:current withDecode:self];
                     }
                     [self processFFmpegFrame:outP];
                     pts += pts_increment;
@@ -748,7 +759,6 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
         }
     });
 }
- */
 
 //const int fps = 30 * section;
 
