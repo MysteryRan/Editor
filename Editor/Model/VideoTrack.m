@@ -36,14 +36,24 @@
     clip.trimIn = trimIn;
     clip.trimOut = trimOut;
     clip.outPoint = clip.inPoint + trimOut - trimIn;
+    clip.filePath = filePath;
     self.current_in_point = clip.outPoint;
     [self.clips addObject:clip];
+    if (self.clips.count > 0) {
+        EditorFFmpegDecode *first = self.clips[0];
+        first.printTime = YES;
+    }
     return clip;
 }
 
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
     if (current >= deocde.outPoint) {
-        deocde.delegate = nil;
+        NSUInteger index = [self.clips indexOfObject:deocde];
+        NSUInteger next = index + 1;
+        if (next >= 0 && next < self.clips.count) {
+            EditorFFmpegDecode *nextDec = self.clips[next];
+            nextDec.printTime = YES;
+        }
     }
     if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
         [self.decodeDelegate clipCurrentTime:current withDecode:deocde];

@@ -25,7 +25,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic,assign) int64_t inPoint;
 @property (nonatomic,assign) int64_t outPoint;
 @property (nonatomic,copy) NSString *filePath;
-
+@property (nonatomic,assign) BOOL printTime;
 
 @property(nonatomic,weak)id<EditorFFmpegDecodeDelegate> decodeDelegate;
 - (void)appendClipClip:(NSString *)filePath trimIn:(uint64_t)trimIn trimOut:(uint64_t)trimOut;

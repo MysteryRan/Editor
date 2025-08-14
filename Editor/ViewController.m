@@ -266,6 +266,8 @@
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
 //    return;
     //转场默认3s 开始转场时间为2000000
+    NSLog(@"%lld",current);
+    
     if (0 <= current - 2000000 && current - 2000000 < 33333) {
         NSLog(@"transition begin  %lld",current);
         
@@ -282,10 +284,10 @@
         [secondDecode beginDecode];
     }
     
-    if (2000000<= current && current <= 3000000) {
+    if (2000000 < current && current <= 3000000) {
         float maintime = (current - 2000000)/(1000000*1.0);
         NSLog(@"transition doing  %lld maintime %f",current,maintime);
-        [self.transitionFilter setFloat:0.5 forUniformName:@"maintime"];
+        [self.transitionFilter setFloat:maintime forUniformName:@"maintime"];
     }
     
     if (current - 3000000 >= 0 && current - 3000000 < 33333) {

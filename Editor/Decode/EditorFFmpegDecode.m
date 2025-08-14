@@ -517,7 +517,10 @@ double convert_to_common_time(int64_t src_pts, AVRational src_time_base) {
 //                NSLog(@"neibu  %lld",current);
 
                 if (self.decodeDelegate && [self.decodeDelegate respondsToSelector:@selector(clipCurrentTime:withDecode:)]) {
-                    [self.decodeDelegate clipCurrentTime:current withDecode:self];
+                    if (self.printTime) {
+//                        NSLog(@"%@--current-time %lld",self.filePath,current);
+                        [self.decodeDelegate clipCurrentTime:current withDecode:self];
+                    }
                 }
                 
 //                if (frame_time >= 3.0) {
