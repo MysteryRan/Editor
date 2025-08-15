@@ -48,6 +48,7 @@
 @property (nonatomic, strong) NSMutableArray *transformFilters;
 @property (nonatomic, strong) VITimelineView *timelineView;
 
+@property (nonatomic, assign) int64_t totalDuration;
 
 @end
 
@@ -62,7 +63,6 @@
     
     [self setupPreView];
     [self setupPlaycontrol];
-    [self setupMainTrack];
     [self setupResource];
     
     VideoTrack *track = [[VideoTrack alloc] init];
@@ -74,6 +74,13 @@
 
     EditorFFmpegDecode *firstDecode = [track appendClip:firstFilePath trimIn:0 trimOut:3000000];
     EditorFFmpegDecode *secondDecode = [track appendClip:secondFilePath trimIn:0 trimOut:5000000];
+    
+    //有一个混合转场 减去转场的时间
+//    self.totalDuration = (firstDecode.trimOut - firstDecode.trimIn) + (secondDecode.trimOut - secondDecode.trimIn) - 1000000;
+    
+    //没有转场 直接相加
+    self.totalDuration = (firstDecode.trimOut - firstDecode.trimIn) + (secondDecode.trimOut - secondDecode.trimIn);
+    
     
     GPUImageTransformFilter *firstAspectFilter = [[GPUImageTransformFilter alloc] init];
     firstAspectFilter.affineTransform = [self aspectTransformForInput:[NSURL fileURLWithPath:firstFilePath] outputSize:CGSizeMake(720, 720)];
@@ -102,6 +109,8 @@
     
 //    [secondAspectFilter addTarget:self.gpuPreView];
 //    [secondDecode beginDecode];
+    
+    [self setupMainTrack];
 }
 
 - (void)setupPreView {
@@ -263,11 +272,16 @@
     return transform;
 }
 
+/* 有转场
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
-//    return;
-    //转场默认3s 开始转场时间为2000000
-    NSLog(@"%lld",current);
-    
+    //转场默认3s 开始转场时间为1000000
+    CMTime time = CMTimeMake(current, AV_TIME_BASE);
+    CGFloat offsetX = [self.timelineView calculateOffsetXAtTime:time];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.timelineView scrollToContentOffset:CGPointMake(offsetX, 0) animated:YES completion:^{
+            
+        }];
+    });
     if (0 <= current - 2000000 && current - 2000000 < 33333) {
         NSLog(@"transition begin  %lld",current);
         
@@ -297,6 +311,26 @@
         GPUImageTransformFilter *filter1 = self.transformFilters[1];
         [filter1 removeTarget:self.transitionFilter];
         [filter1 addTarget:self.gpuPreView];
+    }
+}
+*/
+
+//无转场
+- (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
+    CMTime time = CMTimeMake(current, AV_TIME_BASE);
+    CGFloat offsetX = [self.timelineView calculateOffsetXAtTime:time];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.timelineView scrollToContentOffset:CGPointMake(offsetX, 0) animated:YES completion:^{
+            
+        }];
+    });    
+    if (current - 3000000 >= 0 && current - 3000000 < 33333) {
+        GPUImageTransformFilter *filter = self.transformFilters[0];
+        GPUImageTransformFilter *filter1 = self.transformFilters[1];
+        [filter removeTarget:self.gpuPreView];
+        [filter1 addTarget:self.gpuPreView];
+        EditorFFmpegDecode *secondDecode = [self.decodes lastObject];
+        [secondDecode beginDecode];
     }
 }
 
@@ -334,6 +368,12 @@
         obj.leftEarView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
         obj.rightEarView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
         obj.backgroundView.backgroundColor = [UIColor colorWithRed:0.72 green:0.73 blue:0.77 alpha:1.00];
+        EditorFFmpegDecode *decode = self.decodes[idx];
+        if (idx == 1) {
+            obj.leftInsetDuration = CMTimeMake(10000000, AV_TIME_BASE);
+        }
+        obj.startTime = CMTimeMake(decode.trimIn, AV_TIME_BASE);
+        obj.endTime = CMTimeMake(decode.trimOut, AV_TIME_BASE);
     }];
     self.timelineView = timelineView;
     

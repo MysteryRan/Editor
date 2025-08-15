@@ -37,7 +37,7 @@
     clip.trimOut = trimOut;
     clip.outPoint = clip.inPoint + trimOut - trimIn;
     clip.filePath = filePath;
-    self.current_in_point = clip.outPoint;
+    self.current_in_point = clip.outPoint + 33333;
     [self.clips addObject:clip];
     if (self.clips.count > 0) {
         EditorFFmpegDecode *first = self.clips[0];
