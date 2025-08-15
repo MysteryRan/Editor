@@ -45,10 +45,14 @@
 @property (nonatomic, strong) EditorData *editorData;
 @property (nonatomic, strong) NSMutableArray *decodes;
 @property (nonatomic, strong) GPUImageTwoInputTransitonFilter *transitionFilter;
+@property (nonatomic, strong) GPUImageNormalBlendFilter *normalBlendFilter;
+
 @property (nonatomic, strong) NSMutableArray *transformFilters;
 @property (nonatomic, strong) VITimelineView *timelineView;
 
 @property (nonatomic, assign) int64_t totalDuration;
+@property (nonatomic, strong) GPUImagePicture *pictureInput;
+
 
 @end
 
@@ -100,6 +104,7 @@
      切换fliter 单个 多个之间切换
      */
     self.transitionFilter = [[GPUImageTwoInputTransitonFilter alloc] initWithFragmentShaderFromFile:@"Heart"];
+    self.normalBlendFilter = [[GPUImageNormalBlendFilter alloc] init];
     [self.transitionFilter setFloat:0 forUniformName:@"maintime"];
     [firstDecode addTarget:firstAspectFilter];
     [secondDecode addTarget:secondAspectFilter];
@@ -272,7 +277,7 @@
     return transform;
 }
 
-/* 有转场
+/* 有双视频混合转场
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
     //转场默认3s 开始转场时间为1000000
     CMTime time = CMTimeMake(current, AV_TIME_BASE);
@@ -316,6 +321,7 @@
 */
 
 //无转场
+/*
 - (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
     CMTime time = CMTimeMake(current, AV_TIME_BASE);
     CGFloat offsetX = [self.timelineView calculateOffsetXAtTime:time];
@@ -328,6 +334,54 @@
         GPUImageTransformFilter *filter = self.transformFilters[0];
         GPUImageTransformFilter *filter1 = self.transformFilters[1];
         [filter removeTarget:self.gpuPreView];
+        [filter1 addTarget:self.gpuPreView];
+        EditorFFmpegDecode *secondDecode = [self.decodes lastObject];
+        [secondDecode beginDecode];
+    }
+}
+ */
+
+//单视频转场
+- (void)clipCurrentTime:(int64_t)current withDecode:(EditorFFmpegDecode *)deocde {
+    //转场默认3s 开始转场时间为3000000
+    CMTime time = CMTimeMake(current, AV_TIME_BASE);
+    CGFloat offsetX = [self.timelineView calculateOffsetXAtTime:time];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.timelineView scrollToContentOffset:CGPointMake(offsetX, 0) animated:YES completion:^{
+            
+        }];
+    });
+    if (0 <= current - 1000000 && current - 1000000 < 33333) {
+        NSLog(@"transition begin  %lld",current);
+        
+        GPUImageTransformFilter *filter = self.transformFilters[0];
+               
+        self.pictureInput = [[GPUImagePicture alloc] initWithImage:[UIImage imageNamed:@"clipname_000.png"]];
+        
+        [filter removeTarget:self.gpuPreView];
+        
+        [filter addTarget:self.normalBlendFilter];
+        [self.pictureInput addTarget:self.normalBlendFilter];
+        
+        [self.normalBlendFilter addTarget:self.gpuPreView];
+        [self.pictureInput processImage];
+    }
+    
+    //000-051
+    if (1000000 < current && current <= 3000000) {
+        int maintime = (current - 1000000)/(2000000*1.0) * 51;
+        NSString *imageName = [NSString stringWithFormat:@"clipname_0%.02d.png",maintime];
+        UIImage *transitionImage = [UIImage imageNamed:imageName];
+        if (transitionImage) {
+            [self.pictureInput replaceTextureWithSubimage:transitionImage];
+        }
+    }
+    
+    if (current - 3000000 >= 0 && current - 3000000 < 33333) {
+        NSLog(@"transition after  %lld--%@",current,deocde.filePath);
+        
+        [self.normalBlendFilter removeTarget:self.gpuPreView];
+        GPUImageTransformFilter *filter1 = self.transformFilters[1];
         [filter1 addTarget:self.gpuPreView];
         EditorFFmpegDecode *secondDecode = [self.decodes lastObject];
         [secondDecode beginDecode];
